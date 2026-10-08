@@ -1,0 +1,24 @@
+# macOS
+.DS_Store
+
+# Gobierno del proyecto: SOLO LOCAL, nunca subir (decisión 2026-09-30)
+AGENTS.md
+/jira/
+
+# .NET
+bin/
+obj/
+artifacts/
+*.binlog
+TestResults/
+.vs/
+.vscode/
+.idea/
+*.user
+
+# Entorno
+.env
+
+# NuGet
+*.nupkg
+*.snupkg

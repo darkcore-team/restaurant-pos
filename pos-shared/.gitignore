@@ -1,0 +1,16 @@
+.DS_Store
+.env
+*.user
+
+# .NET
+bin/
+obj/
+.vs/
+.vscode/
+*.binlog
+TestResults/
+.idea/
+# Build artifacts (Directory.Build.props)
+artifacts/
+*.nupkg
+*.snupkg

@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/RestaurantPos.Shared.Abstractions/RestaurantPos.Shared.Abstractions.csproj" />
+    <Project Path="src/RestaurantPos.Shared.Infrastructure/RestaurantPos.Shared.Infrastructure.csproj" />
+    <Project Path="src/RestaurantPos.Shared.Persistence/RestaurantPos.Shared.Persistence.csproj" />
+  </Folder>
+</Solution>

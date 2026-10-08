@@ -1,0 +1,11 @@
+.DS_Store
+.env
+*.user
+
+# .NET
+bin/
+obj/
+.vs/
+.vscode/
+*.binlog
+TestResults/
