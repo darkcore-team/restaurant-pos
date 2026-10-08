@@ -1,9 +1,0 @@
-.DS_Store
-.env
-*.user
-
-# Node / React
-node_modules/
-dist/
-.vite/
-*.local
