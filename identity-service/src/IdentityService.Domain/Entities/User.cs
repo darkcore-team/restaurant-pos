@@ -16,7 +16,7 @@ public class User
     public DateTimeOffset? LastLoginAt { get; set; }
     public RecordStatus Status { get; set; } = RecordStatus.Active;
     public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset? UpdatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
     public long ? CreatedBy { get; set; }
     public long? UpdatedBy { get; set; }
 }
