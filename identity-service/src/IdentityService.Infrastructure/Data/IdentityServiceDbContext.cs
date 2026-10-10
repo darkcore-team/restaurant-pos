@@ -16,10 +16,12 @@ public sealed class IdentityServiceDbContext(DbContextOptions options) : TenantD
     public DbSet<User> Users => Set<User>();
     public DbSet<UserAuthority> UserAuthorities => Set<UserAuthority>();
     public DbSet<UserBranch> UserBranches => Set<UserBranch>();
+    public DbSet<LoginAttempt> LoginAttempts => Set<LoginAttempt>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.UseOpenIddict();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(IdentityServiceDbContext).Assembly);
     }
 }

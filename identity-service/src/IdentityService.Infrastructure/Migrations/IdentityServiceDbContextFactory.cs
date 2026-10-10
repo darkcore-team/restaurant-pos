@@ -9,8 +9,12 @@ public sealed class IdentityServiceDbContextFactory : IDesignTimeDbContextFactor
 {
     public IdentityServiceDbContext CreateDbContext(string[] args)
     {
+        var connectionString =
+            Environment.GetEnvironmentVariable("IDENTITY_DB_CONNECTION")
+            ?? "Host=localhost;Database=identity_design";
+        
         var options = new DbContextOptionsBuilder<IdentityServiceDbContext>()
-            .UseNpgsql("Host=localhost;Database=identity_design", o =>
+            .UseNpgsql(connectionString, o =>
             {
                 o.MigrationsHistoryTable("__EFMigrationsHistory", "identity");
                 o.MapEnum<RecordStatus>(enumName: "record_status", schemaName: "identity");

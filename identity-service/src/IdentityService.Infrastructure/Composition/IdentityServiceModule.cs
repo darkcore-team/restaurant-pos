@@ -1,11 +1,16 @@
 using IdentityService.Domain.Constants;
-using IdentityService.Infrastructure.Configuration;
+using IdentityService.Domain.Entities;
+using IdentityService.Infrastructure.Authentication;
 using IdentityService.Infrastructure.Data;
+using IdentityService.Infrastructure.Seed;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using OpenIddict.Server;
 using RestaurantPos.Shared.Infrastructure.Health;
 using RestaurantPos.Shared.Persistence;
+using IdentityOptions = IdentityService.Infrastructure.Configuration.IdentityOptions;
 
 namespace IdentityService.Infrastructure.Composition;
 
@@ -30,6 +35,35 @@ public static class IdentityServiceModule
             connectionString, "identity",
             npgsql => npgsql.MapEnum<RecordStatus>(enumName: "record_status", schemaName: "identity"),
             options => options.UseSnakeCaseNamingConvention());
+
+        var identityOptions = identity.Get<IdentityOptions>() ?? new IdentityOptions();
+        services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+        services.AddScoped<OpenIddictPasswordGrantHandler>();
+        services.AddScoped<IdentityDevSeeder>();
+
+        services.AddOpenIddict()
+            .AddCore(options => options
+                .UseEntityFrameworkCore()
+                .UseDbContext<IdentityServiceDbContext>())
+            .AddServer(options =>
+            {
+                options.SetIssuer(identity["Issuer"] ?? "https://localhost:8081");
+                options.SetTokenEndpointUris("/connect/token");
+                
+                options.AllowPasswordFlow();
+                options.AllowRefreshTokenFlow();
+                options.AllowClientCredentialsFlow();
+                
+                options.SetAccessTokenLifetime(TimeSpan.FromMinutes(identityOptions.AccessTokenExpiration));
+                options.SetRefreshTokenLifetime(TimeSpan.FromDays(14));
+                
+                options.AddEphemeralSigningKey();
+                options.AddEphemeralEncryptionKey();
+                options.AddEventHandler<OpenIddictServerEvents.HandleTokenRequestContext>(handler =>
+                    handler.UseScopedHandler<OpenIddictPasswordGrantHandler>());
+
+                options.UseAspNetCore().DisableTransportSecurityRequirement();
+            });
 
         services.AddPosHealthChecks("identity-service");
         return services;
