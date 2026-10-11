@@ -9,11 +9,11 @@ public sealed class UserAuthorityConfiguration : IEntityTypeConfiguration<UserAu
     public void Configure(EntityTypeBuilder<UserAuthority> builder)
     {
         builder.HasKey(ua => ua.Id);
-        builder.HasOne<User>()
-            .WithMany()
+        builder.HasOne(ua => ua.User)
+            .WithMany(u => u.UserAuthorities)
             .HasForeignKey(ua => ua.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-        builder.HasOne<Authority>()
+        builder.HasOne(ua => ua.Authority)
             .WithMany()
             .HasForeignKey(ua => ua.AuthorityId)
             .OnDelete(DeleteBehavior.NoAction);

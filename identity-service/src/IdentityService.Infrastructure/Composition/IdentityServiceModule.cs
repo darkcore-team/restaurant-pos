@@ -1,7 +1,9 @@
 using IdentityService.Domain.Constants;
 using IdentityService.Domain.Entities;
+using IdentityService.Domain.Repositories;
 using IdentityService.Infrastructure.Authentication;
 using IdentityService.Infrastructure.Data;
+using IdentityService.Infrastructure.Repositories;
 using IdentityService.Infrastructure.Seed;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -40,6 +42,9 @@ public static class IdentityServiceModule
         services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddScoped<OpenIddictPasswordGrantHandler>();
         services.AddScoped<IdentityDevSeeder>();
+        services.AddScoped<IUserBranchRepository, UserBranchRepository>();
+        services.AddScoped<IAuthorityRepository, AuthorityRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         services.AddOpenIddict()
             .AddCore(options => options
@@ -63,6 +68,17 @@ public static class IdentityServiceModule
                     handler.UseScopedHandler<OpenIddictPasswordGrantHandler>());
 
                 options.UseAspNetCore().DisableTransportSecurityRequirement();
+            })
+            .AddValidation(options =>
+            {
+                options.UseLocalServer();
+                options.UseAspNetCore();
+
+                options.Configure(valOptions =>
+                {
+                    valOptions.TokenValidationParameters.NameClaimType = "name";
+                    valOptions.TokenValidationParameters.RoleClaimType = "role";
+                });
             });
 
         services.AddPosHealthChecks("identity-service");

@@ -11,10 +11,12 @@ public sealed class BranchConfiguration : IEntityTypeConfiguration<Branch>
         builder.HasKey(b => b.Id);
         builder.Property(b => b.PublicId).HasDefaultValueSql("gen_random_uuid()");
         builder.HasIndex(b => b.PublicId).IsUnique();
-        builder.HasOne<Restaurant>()
+        
+        builder.HasOne(b => b.Restaurant)
             .WithMany()
             .HasForeignKey(b => b.RestaurantId)
             .OnDelete(DeleteBehavior.Cascade);
+        
         builder.Property(b => b.CityId).IsRequired();
         builder.Property(b => b.Code).HasMaxLength(20).IsRequired();
         builder.Property(b => b.Name).HasMaxLength(120).IsRequired();
@@ -23,9 +25,11 @@ public sealed class BranchConfiguration : IEntityTypeConfiguration<Branch>
         builder.Property(b => b.Status).HasDefaultValueSql("'ACTIVE'");
         builder.Property(b => b.CreatedAt).HasDefaultValueSql("now()");
         builder.Property(b => b.UpdatedAt).HasDefaultValueSql("now()");
+        
         builder.HasIndex(b => new { b.RestaurantId, b.Code }).IsUnique();
         builder.HasIndex(b => new { b.Id, b.RestaurantId }).IsUnique();
         builder.HasIndex(b => b.RestaurantId).IsUnique().HasFilter("\"is_default\"");
+        
         builder.ToTable(t => t.HasCheckConstraint("ck_branch_hours",
             "\"closes_at\" IS NULL OR \"opens_at\" IS NULL OR \"closes_at\" > \"opens_at\""));
     }

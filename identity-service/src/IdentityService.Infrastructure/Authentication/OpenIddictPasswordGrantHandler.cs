@@ -114,7 +114,7 @@ public sealed class OpenIddictPasswordGrantHandler(
             nameType: OpenIddictConstants.Claims.Name, 
             roleType: OpenIddictConstants.Claims.Role);
         
-        identity.SetClaim(OpenIddictConstants.Claims.Subject, user.Id.ToString());
+        identity.SetClaim(OpenIddictConstants.Claims.Subject, user.Id.ToString(), OpenIddictConstants.Destinations.AccessToken);
         identity.SetClaim(PosClaims.DisplayName, $"{person?.FirstName} {person?.LastName}".Trim(), 
             OpenIddictConstants.Destinations.AccessToken);
         identity.SetClaim(PosClaims.RestaurantId, branch?.RestaurantId.ToString() ?? string.Empty, 

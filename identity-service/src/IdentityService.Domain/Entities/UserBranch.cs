@@ -10,4 +10,7 @@ public class UserBranch
     public DateTimeOffset UpdatedAt { get; set; }
     public long? CreatedBy { get; set; }
     public long? UpdatedBy { get; set; }
+
+    public User User { get; set; } = null!;
+    public Branch Branch { get; set; } = null!;
 }
