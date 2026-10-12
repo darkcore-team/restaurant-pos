@@ -11,7 +11,7 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(u => u.Id);
         builder.Property(u => u.PublicId).HasDefaultValueSql("gen_random_uuid()");
         builder.HasIndex(u => u.PublicId).IsUnique();
-        builder.HasOne<Person>()
+        builder.HasOne(u => u.Person)
             .WithOne()
             .HasForeignKey<User>(u => u.PersonId)
             .OnDelete(DeleteBehavior.NoAction);

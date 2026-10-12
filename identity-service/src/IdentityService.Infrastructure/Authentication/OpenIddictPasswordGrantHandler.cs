@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Security.Claims;
 using IdentityService.Domain.Constants;
 using IdentityService.Domain.Entities;
@@ -115,14 +116,12 @@ public sealed class OpenIddictPasswordGrantHandler(
             roleType: OpenIddictConstants.Claims.Role);
         
         identity.SetClaim(OpenIddictConstants.Claims.Subject, user.Id.ToString());
-        identity.SetClaim(PosClaims.DisplayName, $"{person?.FirstName} {person?.LastName}".Trim(), 
-            OpenIddictConstants.Destinations.AccessToken);
-        identity.SetClaim(PosClaims.RestaurantId, branch?.RestaurantId.ToString() ?? string.Empty, 
-            OpenIddictConstants.Destinations.AccessToken);
-        identity.SetClaim(PosClaims.BranchId, branch?.Id.ToString() ?? string.Empty,
-            OpenIddictConstants.Destinations.AccessToken);
+        identity.SetClaim(PosClaims.DisplayName, $"{person?.FirstName} {person?.LastName}".Trim());
+        identity.SetClaim(PosClaims.RestaurantId, branch?.RestaurantId.ToString() ?? string.Empty);
+        identity.SetClaim(PosClaims.BranchId, branch?.Id.ToString() ?? string.Empty);
+        identity.SetClaims(OpenIddictConstants.Claims.Role, roleCodes.ToImmutableArray());
         
-        identity.SetClaims(OpenIddictConstants.Claims.Role, [.. roleCodes], OpenIddictConstants.Destinations.AccessToken);
+        identity.SetDestinations(_ => new[] { OpenIddictConstants.Destinations.AccessToken });
 
         var principal = new ClaimsPrincipal(identity);
         principal.SetScopes(context.Request.GetScopes());

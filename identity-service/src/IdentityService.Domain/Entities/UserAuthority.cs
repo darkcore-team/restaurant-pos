@@ -11,4 +11,7 @@ public class UserAuthority
     public DateTimeOffset UpdatedAt { get; set; }
     public long? CreatedBy { get; set; }
     public long? UpdatedBy { get; set; }
+
+    public User User { get; set; } = null!;
+    public Authority Authority { get; set; } = null!;
 }
