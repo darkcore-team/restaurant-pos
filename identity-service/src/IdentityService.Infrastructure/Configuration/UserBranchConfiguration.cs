@@ -10,7 +10,7 @@ public sealed class UserBranchConfiguration : IEntityTypeConfiguration<UserBranc
     {
         builder.HasKey(ub => ub.Id);
         builder.HasOne(ub => ub.User)
-            .WithMany()
+            .WithMany(u => u.UserBranches)
             .HasForeignKey(ub => ub.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         

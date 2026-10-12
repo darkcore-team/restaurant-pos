@@ -41,4 +41,18 @@ public class UsersController(IUserRepository repository, IPasswordHasher<User> p
             Detail = outcome.ErrorCode
         });
     }
+
+    [HttpGet("claims")]
+    [AllowAnonymous]
+    public IActionResult Claims()
+    {
+        var identity = User.Identity as ClaimsIdentity;
+        return Ok(new
+        {
+            authSchema = User.Identity?.AuthenticationType,
+            roleClaimType = identity?.RoleClaimType,
+            nameClaimType = identity?.NameClaimType,
+            claims = User.Claims.Select(c => new { c.Type, c.Value })
+        });
+    }
 }

@@ -2,13 +2,14 @@ using IdentityService.Infrastructure.Composition;
 using IdentityService.Infrastructure.Seed;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using OpenIddict.Validation.AspNetCore;
+using RestaurantPos.Shared.Infrastructure.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Services
 builder.Services.AddIdentityService(builder.Configuration);
 builder.Services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
-builder.Services.AddAuthorization();
+builder.Services.AddPosAuthorizationPolicies();
 builder.Services.AddControllers();
 
 var app = builder.Build();
