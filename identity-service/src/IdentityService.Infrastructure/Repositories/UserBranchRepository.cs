@@ -17,4 +17,26 @@ public class UserBranchRepository(IdentityServiceDbContext dbContext) : IUserBra
             .OrderBy(ub => ub.Branch.Code)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<Branch?> GetBranchIdByTenantAsync(long branchId, long restaurantId, CancellationToken ct)
+    {
+        return await dbContext.Branches.AsNoTracking()
+            .SingleOrDefaultAsync(b => b.Id == branchId && b.RestaurantId == restaurantId, ct);
+    }
+
+    public async Task<bool> IsAssignedToBranchAsync(long userId, long branchId, CancellationToken ct)
+    {
+        return await dbContext.UserBranches.AnyAsync(ub => ub.UserId == userId && ub.BranchId == branchId, ct);
+    }
+
+    public async Task<bool> UserHasAnyBranchAsync(long userId, CancellationToken ct)
+    {
+        return await dbContext.UserBranches.AnyAsync(ub => ub.UserId == userId, ct);
+    }
+
+    public async Task AssignToBranchAsync(UserBranch assigment, CancellationToken ct)
+    {
+        dbContext.UserBranches.Add(assigment);
+        await dbContext.SaveChangesAsync(ct);
+    }
 }

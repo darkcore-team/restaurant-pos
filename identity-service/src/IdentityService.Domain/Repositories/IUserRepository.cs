@@ -8,4 +8,6 @@ public interface IUserRepository
     Task<IReadOnlyList<Authority>> GetByCodesAsync(IReadOnlyCollection<string> codes, CancellationToken ct);
     Task<IReadOnlyList<Branch>> GetByIdsAsync(IReadOnlyCollection<long> ids, CancellationToken ct);
     Task<long> CreateAsync(User user, CancellationToken ct);
+    Task<IReadOnlyList<User>> GetTenantUsersAsync(long restaurantId, CancellationToken ct);
+    Task<User?> GetByIdAsync(long id, CancellationToken ct);
 }

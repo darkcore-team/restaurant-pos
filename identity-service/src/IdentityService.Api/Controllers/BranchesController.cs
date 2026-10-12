@@ -1,15 +1,19 @@
 using IdentityService.Application.Branches;
+using IdentityService.Application.Users;
 using IdentityService.Domain.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
+using RestaurantPos.Shared.Infrastructure.Authentication;
 
 namespace IdentityService.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
-public class BranchesController(IUserBranchRepository repository) : ControllerBase
+[Authorize(Policy = PosPolicies.AdminOnly)]
+public class BranchesController(
+    IUserBranchRepository userBranchRepository,
+    IUserRepository userRepository) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetMyBranches(CancellationToken ct)
@@ -20,7 +24,31 @@ public class BranchesController(IUserBranchRepository repository) : ControllerBa
             return Unauthorized();
         }
 
-        var branches = await GetMyBranchesUseCase.ExecuteAsync(repository, userId, ct);
+        var branches = await GetMyBranchesUseCase.ExecuteAsync(userBranchRepository, userId, ct);
         return Ok(branches);
+    }
+    
+    [HttpPost("{branchId:long}/assign")]
+    public async Task<IActionResult> AssignBranch(long branchId, AssignBranchRequest request, CancellationToken ct)
+    {
+        var restaurantIdValue = User.FindFirst(PosClaims.RestaurantId)?.Value;
+        if (!long.TryParse(restaurantIdValue, out var restaurantId))
+            return Unauthorized();
+
+        var actorId = long.Parse(User.FindFirst(OpenIddictConstants.Claims.Subject)!.Value);
+        var outcome =
+            await AssignBranchUseCase.ExecuteAsync(
+                userBranchRepository, userRepository, branchId, request.UserId, restaurantId, actorId, ct);
+
+        return outcome.Succeeded
+            ? NoContent()
+            : outcome.ErrorCode switch
+            {
+                AssignBranchErrors.AlreadyAssigned => Conflict(new ProblemDetails
+                    { Title = "Ya se asignó esta sucursal" }),
+                AssignBranchErrors.UserNotFound or AssignBranchErrors.BranchNotFound
+                    => BadRequest(new ProblemDetails() { Title = "Asignación inválida", Detail = outcome.ErrorCode }),
+                _ => BadRequest(new ProblemDetails() { Title = "Asignación inválida" })
+            };
     }
 }

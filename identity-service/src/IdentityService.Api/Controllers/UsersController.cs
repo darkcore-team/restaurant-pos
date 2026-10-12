@@ -42,17 +42,14 @@ public class UsersController(IUserRepository repository, IPasswordHasher<User> p
         });
     }
 
-    [HttpGet("claims")]
-    [AllowAnonymous]
-    public IActionResult Claims()
+    [HttpGet]
+    public async Task<IActionResult> GetUsers(CancellationToken ct)
     {
-        var identity = User.Identity as ClaimsIdentity;
-        return Ok(new
-        {
-            authSchema = User.Identity?.AuthenticationType,
-            roleClaimType = identity?.RoleClaimType,
-            nameClaimType = identity?.NameClaimType,
-            claims = User.Claims.Select(c => new { c.Type, c.Value })
-        });
+        var restaurantIdValue = User.FindFirst(PosClaims.RestaurantId)?.Value;
+        
+        if (!long.TryParse(restaurantIdValue, out var restaurantId))
+            return BadRequest(new ProblemDetails() { Title = "Missing restaurant_id claim" });
+
+        return Ok(await GetUserUseCase.ExecuteAsync(repository, restaurantId, ct));
     }
 }

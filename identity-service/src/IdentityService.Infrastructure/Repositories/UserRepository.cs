@@ -34,4 +34,21 @@ public sealed class UserRepository(IdentityServiceDbContext dbContext) : IUserRe
         await dbContext.SaveChangesAsync(ct);
         return user.Id;
     }
+
+    public async Task<IReadOnlyList<User>> GetTenantUsersAsync(long restaurantId, CancellationToken ct)
+    {
+        return await dbContext.Users
+            .AsNoTracking()
+            .Where(u => u.UserBranches.Any(ub => ub.Branch.RestaurantId == restaurantId))
+            .Include(u => u.Person)
+            .Include(u => u.UserAuthorities).ThenInclude(ua => ua.Authority)
+            .Include(u => u.UserBranches).ThenInclude(ub => ub.Branch)
+            .OrderBy(u => u.Username)
+            .ToListAsync(ct);
+    }
+
+    public async Task<User?> GetByIdAsync(long id, CancellationToken ct)
+    {
+        return await dbContext.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Id == id, ct);
+    }
 }
