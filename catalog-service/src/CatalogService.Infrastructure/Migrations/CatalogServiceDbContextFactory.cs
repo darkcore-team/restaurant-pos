@@ -3,6 +3,8 @@ using CatalogService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace CatalogService.Infrastructure.Migrations;
 
@@ -10,9 +12,13 @@ public sealed class CatalogServiceDbContextFactory : IDesignTimeDbContextFactory
 {
     public CatalogServiceDbContext CreateDbContext(string[] args)
     {
-        var connectionString =
-            Environment.GetEnvironmentVariable("CATALOG_DB_CONNECTION")
-            ?? BuildConfiguration().GetConnectionString("CatalogDb")
+        var configuration = Host.CreateDefaultBuilder(args)
+            .Build()
+            .Services
+            .GetRequiredService<IConfiguration>();
+
+        var connectionString = configuration.GetConnectionString("CatalogDb")
+            ?? Environment.GetEnvironmentVariable("CATALOG_DB_CONNECTION")
             ?? "Host=localhost;Database=catalog_design";
 
         var options = new DbContextOptionsBuilder<CatalogServiceDbContext>()
@@ -25,23 +31,5 @@ public sealed class CatalogServiceDbContextFactory : IDesignTimeDbContextFactory
             .Options;
 
         return new CatalogServiceDbContext(options);
-    }
-
-    private static IConfiguration BuildConfiguration()
-    {
-        var basePath = Directory.GetCurrentDirectory();
-        while (basePath is not null && !File.Exists(Path.Combine(basePath, "appsettings.json")))
-        {
-            basePath = Directory.GetParent(basePath)?.FullName;
-        }
-
-        basePath ??= Directory.GetCurrentDirectory();
-
-        return new ConfigurationBuilder()
-            .SetBasePath(basePath)
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile("appsettings.Development.json", optional: true)
-            .AddEnvironmentVariables()
-            .Build();
     }
 }
