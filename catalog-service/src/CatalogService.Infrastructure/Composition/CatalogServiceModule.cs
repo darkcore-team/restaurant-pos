@@ -4,6 +4,7 @@ using CatalogService.Domain.Repositories;
 using CatalogService.Infrastructure.Data;
 using CatalogService.Infrastructure.Repositories;
 using CatalogService.Application.Stations;
+using CatalogService.Infrastructure.Seed;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +37,7 @@ public static class CatalogServiceModule
 
         services.AddScoped<IMenuRepository, MenuRepository>();
         services.AddScoped<GetMenuUseCase>();
+        services.AddScoped<CatalogDevSeeder>();
         
         services.AddPosHealthChecks("catalog-service");
 
