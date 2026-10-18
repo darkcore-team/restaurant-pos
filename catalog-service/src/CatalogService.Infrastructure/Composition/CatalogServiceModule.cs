@@ -1,5 +1,8 @@
 using CatalogService.Domain.Constants;
+using CatalogService.Domain.Repositories;
 using CatalogService.Infrastructure.Data;
+using CatalogService.Infrastructure.Repositories;
+using CatalogService.Application.Stations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +29,9 @@ public static class CatalogServiceModule
             options => options.UseSnakeCaseNamingConvention());
 
         services.AddPosAuthentication(configuration);
+
+        services.AddScoped<IStationRepository, StationRepository>();
+        services.AddScoped<GetStationsUseCase>();
         
         services.AddPosHealthChecks("catalog-service");
 
