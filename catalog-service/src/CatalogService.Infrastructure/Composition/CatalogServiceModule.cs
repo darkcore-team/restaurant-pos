@@ -1,3 +1,4 @@
+using CatalogService.Application.Menu;
 using CatalogService.Domain.Constants;
 using CatalogService.Domain.Repositories;
 using CatalogService.Infrastructure.Data;
@@ -32,6 +33,9 @@ public static class CatalogServiceModule
 
         services.AddScoped<IStationRepository, StationRepository>();
         services.AddScoped<GetStationsUseCase>();
+
+        services.AddScoped<IMenuRepository, MenuRepository>();
+        services.AddScoped<GetMenuUseCase>();
         
         services.AddPosHealthChecks("catalog-service");
 
