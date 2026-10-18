@@ -4,5 +4,5 @@ namespace CatalogService.Domain.Repositories;
 
 public interface IStationRepository
 {
-    Task<IReadOnlyList<Station>> GetActiveStationsAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Station>> GetActiveStationsAsync(long restaurantId, CancellationToken cancellationToken = default);
 }

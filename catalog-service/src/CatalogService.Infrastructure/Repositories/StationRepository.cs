@@ -8,11 +8,11 @@ namespace CatalogService.Infrastructure.Repositories;
 
 public sealed class StationRepository(CatalogServiceDbContext db) : IStationRepository
 {
-    public async Task<IReadOnlyList<Station>> GetActiveStationsAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<Station>> GetActiveStationsAsync(long restaurantId, CancellationToken cancellationToken = default)
     {
         return await db.Stations
             .AsNoTracking()
-            .Where(s => s.Status == RecordStatus.Active)
+            .Where(s => s.RestaurantId == restaurantId && s.Status == RecordStatus.Active)
             .OrderBy(s => s.Position)
             .ToListAsync(cancellationToken);
     }

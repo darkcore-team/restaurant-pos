@@ -1,12 +1,16 @@
 using CatalogService.Domain.Repositories;
+using RestaurantPos.Shared.Abstractions.Tenancy;
 
 namespace CatalogService.Application.Menu;
 
-public sealed class GetMenuUseCase(IMenuRepository repository)
+public sealed class GetMenuUseCase(IMenuRepository repository, ITenantContext tenantContext)
 {
     public async Task<MenuDto> ExecuteAsync(long branchId, CancellationToken cancellationToken = default)
     {
-        var categories = await repository.GetMenuByBranchAsync(branchId, cancellationToken);
+        var restaurantId = tenantContext.RestaurantId
+            ?? throw new InvalidOperationException("Missing restaurant_id claim");
+
+        var categories = await repository.GetMenuByBranchAsync(branchId, restaurantId, cancellationToken);
 
         var categoryDtos = categories.Select(c => new MenuCategoryDto(
             c.Id,
