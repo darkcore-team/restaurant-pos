@@ -7,6 +7,7 @@ public class Country
     public long Id { get; set; }
     public Guid PublicId { get; set; }
     public string Code { get; set; } = null!;
+    public string? CodeAlpha3 { get; set; }
     public string Name { get; set; } = null!;
     public string? PhoneCode { get; set; }
     public long? DefaultCurrencyId { get; set; }
