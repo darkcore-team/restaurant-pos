@@ -1,6 +1,7 @@
 using CatalogService.Application.Menu;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RestaurantPos.Shared.Abstractions.Common;
 using RestaurantPos.Shared.Infrastructure.Authentication;
 
 namespace CatalogService.Api.Controllers;
@@ -11,8 +12,6 @@ namespace CatalogService.Api.Controllers;
 public class MenuController(GetMenuUseCase useCase) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(typeof(MenuDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetMenu([FromQuery] long branchId, CancellationToken cancellationToken)
     {
         if (branchId <= 0)
@@ -21,6 +20,6 @@ public class MenuController(GetMenuUseCase useCase) : ControllerBase
         }
 
         var result = await useCase.ExecuteAsync(branchId, cancellationToken);
-        return Ok(result);
+        return Ok(Answer<MenuDto>.Ok(result));
     }
 }

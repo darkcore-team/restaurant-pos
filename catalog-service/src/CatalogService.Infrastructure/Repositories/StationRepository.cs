@@ -16,4 +16,7 @@ public sealed class StationRepository(CatalogServiceDbContext db) : IStationRepo
             .OrderBy(s => s.Position)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<bool> ExistsAsync(long id, long restaurantId, CancellationToken cancellationToken = default)
+        => await db.Stations.AnyAsync(s => s.Id == id && s.RestaurantId == restaurantId && s.Status == RecordStatus.Active, cancellationToken);
 }

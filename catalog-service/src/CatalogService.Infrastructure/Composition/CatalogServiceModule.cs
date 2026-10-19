@@ -1,5 +1,6 @@
 using CatalogService.Application.Currencies;
 using CatalogService.Application.Menu;
+using CatalogService.Application.Items;
 using CatalogService.Application.PaymentMethods;
 using CatalogService.Domain.Constants;
 using CatalogService.Domain.Repositories;
@@ -42,9 +43,18 @@ public static class CatalogServiceModule
         services.AddScoped<CatalogDevSeeder>();
 
         services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<GetCurrenciesUseCase>();
         services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
         services.AddScoped<GetPaymentMethodsUseCase>();
+
+services.AddScoped<IProductRepository, ProductRepository>();
+services.AddScoped<ICategoryRepository, CategoryRepository>();
+services.AddScoped<ITaxRepository, TaxRepository>();
+services.AddScoped<IOptionGroupRepository, OptionGroupRepository>();
+services.AddScoped<CreateItemUseCase>();
+services.AddScoped<UpdateItemUseCase>();
+services.AddScoped<DeleteItemUseCase>();
         
         services.AddPosHealthChecks("catalog-service");
 

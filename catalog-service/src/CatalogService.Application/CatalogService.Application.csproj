@@ -6,9 +6,10 @@
     <Nullable>enable</Nullable>                                                                                                                                                                                                                                       
   </PropertyGroup>                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                       
-  <ItemGroup>                                                                                                                                                                                                                                                         
-    <ProjectReference Include="..\CatalogService.Domain\CatalogService.Domain.csproj" />                                                                                                                                                                              
-  </ItemGroup>                                                                                                                                                                                                                                                        
+  <ItemGroup>
+    <ProjectReference Include="..\CatalogService.Domain\CatalogService.Domain.csproj" />
+    <ProjectReference Include="..\..\..\pos-shared\src\RestaurantPos.Shared.Abstractions\RestaurantPos.Shared.Abstractions.csproj" />
+  </ItemGroup>
                                                                                                                                                                                                                                                                       
   <ItemGroup>                                                                                                                                                                                                                                                         
     <FrameworkReference Include="Microsoft.AspNetCore.App" />                                                                                                                                                                                                         

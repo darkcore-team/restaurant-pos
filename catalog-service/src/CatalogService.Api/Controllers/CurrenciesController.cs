@@ -1,6 +1,7 @@
 using CatalogService.Application.Currencies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RestaurantPos.Shared.Abstractions.Common;
 using RestaurantPos.Shared.Infrastructure.Authentication;
 
 namespace CatalogService.Api.Controllers;
@@ -11,10 +12,9 @@ namespace CatalogService.Api.Controllers;
 public class CurrenciesController(GetCurrenciesUseCase useCase) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<CurrencyDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCurrencies(CancellationToken cancellationToken)
     {
         var result = await useCase.ExecuteAsync(cancellationToken);
-        return Ok(result);
+        return Ok(Answer<IReadOnlyList<CurrencyDto>>.Ok(result));
     }
 }

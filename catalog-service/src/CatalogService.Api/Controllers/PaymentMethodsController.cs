@@ -1,6 +1,7 @@
 using CatalogService.Application.PaymentMethods;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RestaurantPos.Shared.Abstractions.Common;
 using RestaurantPos.Shared.Infrastructure.Authentication;
 
 namespace CatalogService.Api.Controllers;
@@ -11,10 +12,9 @@ namespace CatalogService.Api.Controllers;
 public class PaymentMethodsController(GetPaymentMethodsUseCase useCase) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<PaymentMethodDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPaymentMethods(CancellationToken ct)
     {
         var result = await useCase.ExecuteAsync(ct);
-        return Ok(result);
+        return Ok(Answer<IReadOnlyList<PaymentMethodDto>>.Ok(result));
     }
 }
