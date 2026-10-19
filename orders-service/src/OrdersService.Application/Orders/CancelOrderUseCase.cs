@@ -1,20 +1,21 @@
+using Microsoft.Extensions.Localization;
 using OrdersService.Domain.Constants;
 using OrdersService.Domain.Repositories;
 using RestaurantPos.Shared.Abstractions.Common;
 
 namespace OrdersService.Application.Orders;
 
-public sealed class CancelOrderUseCase(IOrderRepository orderRepository)
+public sealed class CancelOrderUseCase(IOrderRepository orderRepository, IStringLocalizer localizer)
 {
     public async Task<Answer> ExecuteAsync(long orderId, long restaurantId, long actorId, string? reason, CancellationToken ct)
     {
         var order = await orderRepository.GetByIdAsync(orderId, restaurantId, ct);
-        
+
         if (order is null)
-            return Answer.Fail("ORDER_NOT_FOUND", "Orden no encontrada");
+            return Answer.Fail("ORDER_NOT_FOUND", localizer["OrderNotFound"]);
 
         if (order.Status is OrderStatus.Closed or OrderStatus.Cancelled)
-            return Answer.Fail("INVALID_STATUS", "La orden ya está cerrada/cancelada");
+            return Answer.Fail("INVALID_STATUS", localizer["OrderClosed"]);
 
         var now = DateTimeOffset.UtcNow;
         var prev = order.Status;
@@ -48,6 +49,6 @@ public sealed class CancelOrderUseCase(IOrderRepository orderRepository)
         });
 
         await orderRepository.UpdateAsync(order, ct);
-        return Answer.Ok(message: "Orden cancelada");
+        return Answer.Ok(message: localizer["OrderCancelled"]);
     }
 }

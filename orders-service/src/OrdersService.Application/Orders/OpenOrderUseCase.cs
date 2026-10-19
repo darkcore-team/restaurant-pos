@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using OrdersService.Domain.Constants;
 using OrdersService.Domain.Entities;
 using OrdersService.Domain.Repositories;
@@ -6,7 +7,7 @@ using RestaurantPos.Shared.Abstractions.Common;
 
 namespace OrdersService.Application.Orders;
 
-public sealed class OpenOrderUseCase(IOrderRepository orderRepository)
+public sealed class OpenOrderUseCase(IOrderRepository orderRepository, IStringLocalizer localizer)
 {
     public async Task<Answer<CreateOrderResponse>> ExecuteAsync(
         long restaurantId,
@@ -16,12 +17,12 @@ public sealed class OpenOrderUseCase(IOrderRepository orderRepository)
         CancellationToken ct)
     {
         if (request.OrderType == OrderType.DineIn && request.TableId is null)
-            return Answer<CreateOrderResponse>.Fail("TABLE_REQUIRED", "La orden DINE_IN requiere mesa");
+            return Answer<CreateOrderResponse>.Fail("TABLE_REQUIRED", localizer["TableRequired"]);
 
         if (request.OrderType == OrderType.DineIn && request.TableId.HasValue)
         {
             if (await orderRepository.HasOpenOrderForTableAsync(request.TableId.Value, restaurantId, ct))
-                return Answer<CreateOrderResponse>.Fail("TABLE_HAS_OPEN_ORDER", "La mesa ya tiene una orden abierta");
+                return Answer<CreateOrderResponse>.Fail("TABLE_HAS_OPEN_ORDER", localizer["TableHasOpenOrder"]);
         }
 
         var next = await orderRepository.CountByBranchAsync(branchId, ct) + 1;
@@ -70,9 +71,9 @@ public sealed class OpenOrderUseCase(IOrderRepository orderRepository)
         }
         catch (DbUpdateException)
         {
-            return Answer<CreateOrderResponse>.Fail("ORDER_CREATE_FAILED", "No se pudo crear la orden (posible conflicto de unicidad)");
+            return Answer<CreateOrderResponse>.Fail("ORDER_CREATE_FAILED", localizer["OrderCreateFailed"]);
         }
 
-        return Answer<CreateOrderResponse>.Ok(new CreateOrderResponse(order.Id, order.OrderNumber), "Orden creada");
+        return Answer<CreateOrderResponse>.Ok(new CreateOrderResponse(order.Id, order.OrderNumber), localizer["OrderCreated"]);
     }
 }

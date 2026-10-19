@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrdersService.Domain.Constants;
 using OrdersService.Domain.Entities;
 using OrdersService.Domain.Repositories;
@@ -5,7 +6,7 @@ using RestaurantPos.Shared.Abstractions.Common;
 
 namespace OrdersService.Application.Orders;
 
-public sealed class VoidItemUseCase(IOrderRepository orderRepository)
+public sealed class VoidItemUseCase(IOrderRepository orderRepository, IStringLocalizer localizer)
 {
     public async Task<Answer> ExecuteAsync(
         long orderId,
@@ -17,17 +18,17 @@ public sealed class VoidItemUseCase(IOrderRepository orderRepository)
     {
         var order = await orderRepository.GetByIdAsync(orderId, restaurantId, ct);
         if (order is null)
-            return Answer.Fail("ORDER_NOT_FOUND", "Orden no encontrada");
+            return Answer.Fail("ORDER_NOT_FOUND", localizer["OrderNotFound"]);
 
         if (order.Status is OrderStatus.Closed or OrderStatus.Cancelled)
-            return Answer.Fail("ORDER_CLOSED", "La orden ya está cerrada/cancelada");
+            return Answer.Fail("ORDER_CLOSED", localizer["OrderClosed"]);
 
         var item = order.Items.FirstOrDefault(i => i.Id == itemId);
         if (item is null)
-            return Answer.Fail("ITEM_NOT_FOUND", "Línea no encontrada");
+            return Answer.Fail("ITEM_NOT_FOUND", localizer["ItemNotFound"]);
 
         if (item.VoidedAt.HasValue)
-            return Answer.Fail("ALREADY_VOIDED", "La línea ya fue anulada");
+            return Answer.Fail("ALREADY_VOIDED", localizer["AlreadyVoided"]);
 
         var now = DateTimeOffset.UtcNow;
         item.Status = OrderItemStatus.Cancelled;
@@ -39,7 +40,7 @@ public sealed class VoidItemUseCase(IOrderRepository orderRepository)
 
         RecalculateTotals(order);
         await orderRepository.UpdateAsync(order, ct);
-        return Answer.Ok(message: "Línea anulada");
+        return Answer.Ok(message: localizer["ItemVoided"]);
     }
 
     private static void RecalculateTotals(Order order)

@@ -1,6 +1,7 @@
 using OrdersService.Api.Middleware;
 using OrdersService.Infrastructure.Composition;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using RestaurantPos.Shared.Infrastructure.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 app.UseGlobalExceptionHandler();
-
+app.UsePosLocalization();
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -1,10 +1,11 @@
+using Microsoft.Extensions.Localization;
 using OrdersService.Domain.Constants;
 using OrdersService.Domain.Repositories;
 using RestaurantPos.Shared.Abstractions.Common;
 
 namespace OrdersService.Application.Orders;
 
-public sealed class UpdateItemStatusUseCase(IOrderRepository orderRepository)
+public sealed class UpdateItemStatusUseCase(IOrderRepository orderRepository, IStringLocalizer localizer)
 {
     public async Task<Answer> ExecuteAsync(
         long orderId,
@@ -15,18 +16,18 @@ public sealed class UpdateItemStatusUseCase(IOrderRepository orderRepository)
         CancellationToken ct)
     {
         if (!Enum.TryParse<OrderItemStatus>(newStatus, true, out var parsed))
-            return Answer.Fail("INVALID_STATUS", "Estado de línea inválido");
+            return Answer.Fail("INVALID_STATUS", localizer["InvalidItemStatus"]);
 
         var order = await orderRepository.GetByIdAsync(orderId, restaurantId, ct);
         if (order is null)
-            return Answer.Fail("ORDER_NOT_FOUND", "Orden no encontrada");
+            return Answer.Fail("ORDER_NOT_FOUND", localizer["OrderNotFound"]);
 
         var item = order.Items.FirstOrDefault(i => i.Id == itemId);
         if (item is null)
-            return Answer.Fail("ITEM_NOT_FOUND", "Línea no encontrada");
+            return Answer.Fail("ITEM_NOT_FOUND", localizer["ItemNotFound"]);
 
         if (item.VoidedAt.HasValue)
-            return Answer.Fail("ITEM_VOIDED", "La línea está anulada");
+            return Answer.Fail("ITEM_VOIDED", localizer["ItemVoidedStatus"]);
 
         var now = DateTimeOffset.UtcNow;
         item.Status = parsed;
@@ -66,6 +67,6 @@ public sealed class UpdateItemStatusUseCase(IOrderRepository orderRepository)
         order.UpdatedAt = now;
         order.UpdatedBy = actorId;
         await orderRepository.UpdateAsync(order, ct);
-        return Answer.Ok(message: "Estado de línea actualizado");
+        return Answer.Ok(message: localizer["ItemStatusUpdated"]);
     }
 }

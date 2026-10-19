@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata"><xsd:complexType><xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" /></xsd:sequence><xsd:attribute name="name" use="required" type="xsd:string" /><xsd:attribute name="type" type="xsd:string" /><xsd:attribute name="mimetype" type="xsd:string" /><xsd:attribute ref="xml:space" /></xsd:complexType></xsd:element>
+          <xsd:element name="assembly"><xsd:complexType><xsd:attribute name="alias" type="xsd:string" /><xsd:attribute name="name" type="xsd:string" /></xsd:complexType></xsd:element>
+          <xsd:element name="data"><xsd:complexType><xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" /><xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" /></xsd:sequence><xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" /><xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" /><xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" /><xsd:attribute ref="xml:space" /></xsd:complexType></xsd:element>
+          <xsd:element name="resheader"><xsd:complexType><xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" /></xsd:sequence><xsd:attribute name="name" type="xsd:string" use="required" /></xsd:complexType></xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5cea1b763a9</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5cea1b763a9</value></resheader>
+  <data name="MissingTenant" xml:space="preserve"><value>Missing restaurant_id/branch_id in token</value></data>
+  <data name="TableRequired" xml:space="preserve"><value>DINE_IN order requires a table</value></data>
+  <data name="TableHasOpenOrder" xml:space="preserve"><value>Table already has an open order</value></data>
+  <data name="OrderCreateFailed" xml:space="preserve"><value>Could not create order (possible uniqueness conflict)</value></data>
+  <data name="OrderCreated" xml:space="preserve"><value>Order created</value></data>
+  <data name="OrderNotFound" xml:space="preserve"><value>Order not found</value></data>
+  <data name="OrderNotOpen" xml:space="preserve"><value>Order does not accept new lines</value></data>
+  <data name="ItemsAdded" xml:space="preserve"><value>Lines added</value></data>
+  <data name="AddItemsFailed" xml:space="preserve"><value>Could not add lines</value></data>
+  <data name="ItemNotFound" xml:space="preserve"><value>Line not found</value></data>
+  <data name="AlreadyVoided" xml:space="preserve"><value>Line already voided</value></data>
+  <data name="ItemVoided" xml:space="preserve"><value>Line voided</value></data>
+  <data name="OrderClosed" xml:space="preserve"><value>Order is already closed/cancelled</value></data>
+  <data name="InvalidStatus" xml:space="preserve"><value>Only an open order can be sent to kitchen</value></data>
+  <data name="NoItems" xml:space="preserve"><value>Order has no lines</value></data>
+  <data name="SentToKitchen" xml:space="preserve"><value>Sent to kitchen</value></data>
+  <data name="InvalidItemStatus" xml:space="preserve"><value>Invalid line status</value></data>
+  <data name="ItemVoidedStatus" xml:space="preserve"><value>Line is voided</value></data>
+  <data name="ItemStatusUpdated" xml:space="preserve"><value>Line status updated</value></data>
+  <data name="CannotRequestBill" xml:space="preserve"><value>Cannot request bill in current status</value></data>
+  <data name="BillRequested" xml:space="preserve"><value>Bill requested</value></data>
+  <data name="OrderCancelled" xml:space="preserve"><value>Order cancelled</value></data>
+  <data name="Unauthorized" xml:space="preserve"><value>Unauthenticated</value></data>
+  <data name="InternalError" xml:space="preserve"><value>Internal server error</value></data>
+</root>

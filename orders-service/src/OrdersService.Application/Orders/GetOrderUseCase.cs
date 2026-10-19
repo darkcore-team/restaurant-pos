@@ -1,15 +1,16 @@
+using Microsoft.Extensions.Localization;
 using RestaurantPos.Shared.Abstractions.Common;
 using OrdersService.Domain.Repositories;
 
 namespace OrdersService.Application.Orders;
 
-public sealed class GetOrderUseCase(IOrderRepository orderRepository)
+public sealed class GetOrderUseCase(IOrderRepository orderRepository, IStringLocalizer localizer)
 {
     public async Task<Answer<OrderDto>> ExecuteAsync(long id, long restaurantId, CancellationToken ct)
     {
         var order = await orderRepository.GetByIdAsync(id, restaurantId, ct);
         if (order is null)
-            return Answer<OrderDto>.Fail("ORDER_NOT_FOUND", "Orden no encontrada");
+            return Answer<OrderDto>.Fail("ORDER_NOT_FOUND", localizer["OrderNotFound"]);
 
         var dto = new OrderDto(
             order.Id,

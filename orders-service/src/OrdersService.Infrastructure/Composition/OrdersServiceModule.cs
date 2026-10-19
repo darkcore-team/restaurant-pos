@@ -4,12 +4,14 @@ using Microsoft.Extensions.DependencyInjection;
 using RestaurantPos.Shared.Infrastructure.Authentication;
 using RestaurantPos.Shared.Infrastructure.Health;
 using RestaurantPos.Shared.Persistence;
+using Microsoft.Extensions.Localization;
 using OrdersService.Application.Kds;
 using OrdersService.Application.Orders;
 using OrdersService.Domain.Constants;
 using OrdersService.Domain.Repositories;
 using OrdersService.Infrastructure.Data;
 using OrdersService.Infrastructure.Repositories;
+using RestaurantPos.Shared.Infrastructure.Localization;
 
 namespace OrdersService.Infrastructure.Composition;
 
@@ -35,6 +37,14 @@ public static class OrdersServiceModule
             options => options.UseSnakeCaseNamingConvention());
 
         services.AddPosAuthentication(configuration);
+        services.AddPosLocalization();
+
+        services.AddTransient<IStringLocalizer>(sp =>
+        {
+            var factory = sp.GetRequiredService<IStringLocalizerFactory>();
+            var assemblyName = "OrdersService.Application";
+            return factory.Create($"{assemblyName}.Resources.Messages", assemblyName);
+        });
 
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<OpenOrderUseCase>();

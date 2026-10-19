@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using OrdersService.Domain.Constants;
 using OrdersService.Domain.Entities;
 using OrdersService.Domain.Repositories;
@@ -6,7 +7,7 @@ using RestaurantPos.Shared.Abstractions.Common;
 
 namespace OrdersService.Application.Orders;
 
-public sealed class AddItemsUseCase(IOrderRepository orderRepository)
+public sealed class AddItemsUseCase(IOrderRepository orderRepository, IStringLocalizer localizer)
 {
     public async Task<Answer<IReadOnlyList<long>>> ExecuteAsync(
         long orderId,
@@ -16,12 +17,12 @@ public sealed class AddItemsUseCase(IOrderRepository orderRepository)
         CancellationToken ct)
     {
         var order = await orderRepository.GetByIdAsync(orderId, restaurantId, ct);
-        
+
         if (order is null)
-            return Answer<IReadOnlyList<long>>.Fail("ORDER_NOT_FOUND", "Orden no encontrada");
+            return Answer<IReadOnlyList<long>>.Fail("ORDER_NOT_FOUND", localizer["OrderNotFound"]);
 
         if (order.Status is OrderStatus.Closed or OrderStatus.Cancelled or OrderStatus.Billing)
-            return Answer<IReadOnlyList<long>>.Fail("ORDER_NOT_OPEN", "La orden no admite nuevas líneas");
+            return Answer<IReadOnlyList<long>>.Fail("ORDER_NOT_OPEN", localizer["OrderNotOpen"]);
 
         var now = DateTimeOffset.UtcNow;
         var newItems = new List<OrderItem>();
@@ -93,11 +94,11 @@ public sealed class AddItemsUseCase(IOrderRepository orderRepository)
         }
         catch (DbUpdateException)
         {
-            return Answer<IReadOnlyList<long>>.Fail("ADD_ITEMS_FAILED", "No se pudieron agregar las líneas");
+            return Answer<IReadOnlyList<long>>.Fail("ADD_ITEMS_FAILED", localizer["AddItemsFailed"]);
         }
 
         var ids = newItems.Select(i => i.Id).ToList();
-        return Answer<IReadOnlyList<long>>.Ok(ids, "Líneas agregadas");
+        return Answer<IReadOnlyList<long>>.Ok(ids, localizer["ItemsAdded"]);
     }
 
     private static void RecalculateTotals(Order order)
