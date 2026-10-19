@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/RealtimeHubService.Api/RealtimeHubService.Api.csproj" />
+  </Folder>
+</Solution>
