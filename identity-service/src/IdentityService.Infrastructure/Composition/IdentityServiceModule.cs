@@ -64,6 +64,8 @@ public static class IdentityServiceModule
                 
                 options.AddEphemeralSigningKey();
                 options.AddEphemeralEncryptionKey();
+                options.DisableAccessTokenEncryption();
+                
                 options.AddEventHandler<OpenIddictServerEvents.HandleTokenRequestContext>(handler =>
                     handler.UseScopedHandler<OpenIddictPasswordGrantHandler>());
 

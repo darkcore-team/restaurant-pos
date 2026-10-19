@@ -125,6 +125,7 @@ public sealed class OpenIddictPasswordGrantHandler(
 
         var principal = new ClaimsPrincipal(identity);
         principal.SetScopes(context.Request.GetScopes());
+        principal.SetAudiences("restaurant-pos");
         
         context.SignIn(principal);
     }

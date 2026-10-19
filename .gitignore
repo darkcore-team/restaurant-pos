@@ -18,6 +18,7 @@ TestResults/
 
 # Entorno
 .env
+appsettings.Development.json
 
 # NuGet
 *.nupkg
