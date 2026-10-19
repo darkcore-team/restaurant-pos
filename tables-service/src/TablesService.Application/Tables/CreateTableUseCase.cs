@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using RestaurantPos.Shared.Abstractions.Common;
 using TablesService.Domain.Constants;
 using TablesService.Domain.Entities;
@@ -5,7 +6,7 @@ using TablesService.Domain.Repositories;
 
 namespace TablesService.Application.Tables;
 
-public sealed class CreateTableUseCase(ITableRepository tableRepository, IZoneRepository zoneRepository)
+public sealed class CreateTableUseCase(ITableRepository tableRepository, IZoneRepository zoneRepository, IStringLocalizer localizer)
 {
     public async Task<Answer<long?>> ExecuteAsync(
         long restaurantId,
@@ -15,10 +16,10 @@ public sealed class CreateTableUseCase(ITableRepository tableRepository, IZoneRe
         CancellationToken ct)
     {
         if (!await zoneRepository.ExistsAsync(request.ZoneId, restaurantId, branchId, ct))
-            return Answer<long?>.Fail("UNKNOWN_ZONE", "Zona no encontrada");
+            return Answer<long?>.Fail("UNKNOWN_ZONE", localizer["UnknownZone"]);
 
         if (await tableRepository.CodeExistsAsync(request.Code, branchId, ct))
-            return Answer<long?>.Fail("DUPLICATE_CODE", "Ya existe una mesa con ese código");
+            return Answer<long?>.Fail("DUPLICATE_CODE", localizer["DuplicateCode"]);
 
         var now = DateTimeOffset.UtcNow;
         var table = new DiningTable
@@ -42,6 +43,6 @@ public sealed class CreateTableUseCase(ITableRepository tableRepository, IZoneRe
         };
 
         await tableRepository.CreateAsync(table, ct);
-        return Answer<long?>.Ok(table.Id, "Mesa creada");
+        return Answer<long?>.Ok(table.Id, localizer["TableCreated"]);
     }
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata"><xsd:complexType><xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" /></xsd:sequence><xsd:attribute name="name" use="required" type="xsd:string" /><xsd:attribute name="type" type="xsd:string" /><xsd:attribute name="mimetype" type="xsd:string" /><xsd:attribute ref="xml:space" /></xsd:complexType></xsd:element>
+          <xsd:element name="assembly"><xsd:complexType><xsd:attribute name="alias" type="xsd:string" /><xsd:attribute name="name" type="xsd:string" /></xsd:complexType></xsd:element>
+          <xsd:element name="data"><xsd:complexType><xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" /><xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" /></xsd:sequence><xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" /><xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" /><xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" /><xsd:attribute ref="xml:space" /></xsd:complexType></xsd:element>
+          <xsd:element name="resheader"><xsd:complexType><xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" /></xsd:sequence><xsd:attribute name="name" type="xsd:string" use="required" /></xsd:complexType></xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5cea1b763a9</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5cea1b763a9</value></resheader>
+  <data name="MissingTenant" xml:space="preserve"><value>Missing restaurant_id/branch_id in token</value></data>
+  <data name="UnknownZone" xml:space="preserve"><value>Zone not found</value></data>
+  <data name="DuplicateCode" xml:space="preserve"><value>A table with this code already exists</value></data>
+  <data name="TableCreated" xml:space="preserve"><value>Table created</value></data>
+  <data name="TableNotFound" xml:space="preserve"><value>Table not found</value></data>
+  <data name="InvalidStatus" xml:space="preserve"><value>Invalid status</value></data>
+  <data name="StatusUpdated" xml:space="preserve"><value>Status updated</value></data>
+  <data name="TableAlreadyAssigned" xml:space="preserve"><value>Table already assigned</value></data>
+  <data name="WaiterAlreadyAssigned" xml:space="preserve"><value>Waiter already has a table assigned</value></data>
+  <data name="AssignmentConflict" xml:space="preserve"><value>Assignment conflict (unique index)</value></data>
+  <data name="TableAssigned" xml:space="preserve"><value>Table assigned</value></data>
+  <data name="NoActiveAssignment" xml:space="preserve"><value>Table has no active assignment</value></data>
+  <data name="ForbiddenRelease" xml:space="preserve"><value>You cannot release another waiter's table</value></data>
+  <data name="TableReleased" xml:space="preserve"><value>Table released</value></data>
+  <data name="Unauthorized" xml:space="preserve"><value>Unauthenticated</value></data>
+  <data name="InternalError" xml:space="preserve"><value>Internal server error</value></data>
+</root>

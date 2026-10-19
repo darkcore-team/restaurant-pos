@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using RestaurantPos.Shared.Abstractions.Common;
 using TablesService.Domain.Constants;
 using TablesService.Domain.Repositories;
@@ -6,7 +7,8 @@ namespace TablesService.Application.Tables;
 
 public sealed class ReleaseTableUseCase(
     ITableRepository tableRepository,
-    ITableAssignmentRepository assignmentRepository)
+    ITableAssignmentRepository assignmentRepository,
+    IStringLocalizer localizer)
 {
     public async Task<Answer> ExecuteAsync(
         long tableId,
@@ -17,14 +19,14 @@ public sealed class ReleaseTableUseCase(
     {
         var table = await tableRepository.GetByIdAsync(tableId, restaurantId, ct);
         if (table is null)
-            return Answer.Fail("TABLE_NOT_FOUND", "Mesa no encontrada");
+            return Answer.Fail("TABLE_NOT_FOUND", localizer["TableNotFound"]);
 
         var assignment = await assignmentRepository.GetActiveByTableAsync(tableId, ct);
         if (assignment is null)
-            return Answer.Fail("NO_ACTIVE_ASSIGNMENT", "La mesa no tiene asignación activa");
+            return Answer.Fail("NO_ACTIVE_ASSIGNMENT", localizer["NoActiveAssignment"]);
 
         if (!isManager && assignment.WaiterId != actorId)
-            return Answer.Fail("FORBIDDEN", "No podés liberar la mesa de otro mesero");
+            return Answer.Fail("FORBIDDEN", localizer["ForbiddenRelease"]);
 
         var now = DateTimeOffset.UtcNow;
         assignment.ReleasedAt = now;
@@ -38,6 +40,6 @@ public sealed class ReleaseTableUseCase(
         table.UpdatedBy = actorId;
         await tableRepository.UpdateAsync(table, ct);
 
-        return Answer.Ok(message: "Mesa liberada");
+        return Answer.Ok(message: localizer["TableReleased"]);
     }
 }
