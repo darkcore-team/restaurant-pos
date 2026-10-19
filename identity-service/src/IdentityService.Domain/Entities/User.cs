@@ -19,4 +19,8 @@ public class User
     public DateTimeOffset UpdatedAt { get; set; }
     public long ? CreatedBy { get; set; }
     public long? UpdatedBy { get; set; }
+
+    public Person Person { get; set; } = null!;
+    public ICollection<UserAuthority> UserAuthorities  { get; set; } = new List<UserAuthority>();
+    public ICollection<UserBranch> UserBranches { get; set; } = new List<UserBranch>();
 }

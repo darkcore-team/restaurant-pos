@@ -775,11 +775,18 @@ namespace IdentityService.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("user_id");
 
+                    b.Property<long?>("UserId1")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id1");
+
                     b.HasKey("Id")
                         .HasName("pk_user_branches");
 
                     b.HasIndex("BranchId")
                         .HasDatabaseName("ix_user_branches_branch_id");
+
+                    b.HasIndex("UserId1")
+                        .HasDatabaseName("ix_user_branches_user_id1");
 
                     b.HasIndex("UserId", "BranchId")
                         .IsUnique()
@@ -1055,12 +1062,14 @@ namespace IdentityService.Infrastructure.Migrations
 
             modelBuilder.Entity("IdentityService.Domain.Entities.Branch", b =>
                 {
-                    b.HasOne("IdentityService.Domain.Entities.Restaurant", null)
+                    b.HasOne("IdentityService.Domain.Entities.Restaurant", "Restaurant")
                         .WithMany()
                         .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_branches_restaurants_restaurant_id");
+
+                    b.Navigation("Restaurant");
                 });
 
             modelBuilder.Entity("IdentityService.Domain.Entities.LoginAttempt", b =>
@@ -1084,17 +1093,19 @@ namespace IdentityService.Infrastructure.Migrations
 
             modelBuilder.Entity("IdentityService.Domain.Entities.User", b =>
                 {
-                    b.HasOne("IdentityService.Domain.Entities.Person", null)
+                    b.HasOne("IdentityService.Domain.Entities.Person", "Person")
                         .WithOne()
                         .HasForeignKey("IdentityService.Domain.Entities.User", "PersonId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("fk_users_people_person_id");
+
+                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("IdentityService.Domain.Entities.UserAuthority", b =>
                 {
-                    b.HasOne("IdentityService.Domain.Entities.Authority", null)
+                    b.HasOne("IdentityService.Domain.Entities.Authority", "Authority")
                         .WithMany()
                         .HasForeignKey("AuthorityId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1107,29 +1118,42 @@ namespace IdentityService.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("fk_user_authorities_users_granted_by");
 
-                    b.HasOne("IdentityService.Domain.Entities.User", null)
-                        .WithMany()
+                    b.HasOne("IdentityService.Domain.Entities.User", "User")
+                        .WithMany("UserAuthorities")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_authorities_users_user_id");
+
+                    b.Navigation("Authority");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("IdentityService.Domain.Entities.UserBranch", b =>
                 {
-                    b.HasOne("IdentityService.Domain.Entities.Branch", null)
-                        .WithMany()
+                    b.HasOne("IdentityService.Domain.Entities.Branch", "Branch")
+                        .WithMany("UserBranches")
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_branches_branches_branch_id");
 
-                    b.HasOne("IdentityService.Domain.Entities.User", null)
+                    b.HasOne("IdentityService.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_branches_users_user_id");
+
+                    b.HasOne("IdentityService.Domain.Entities.User", null)
+                        .WithMany("UserBranches")
+                        .HasForeignKey("UserId1")
+                        .HasConstraintName("fk_user_branches_users_user_id1");
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreAuthorization", b =>
@@ -1157,6 +1181,18 @@ namespace IdentityService.Infrastructure.Migrations
                     b.Navigation("Application");
 
                     b.Navigation("Authorization");
+                });
+
+            modelBuilder.Entity("IdentityService.Domain.Entities.Branch", b =>
+                {
+                    b.Navigation("UserBranches");
+                });
+
+            modelBuilder.Entity("IdentityService.Domain.Entities.User", b =>
+                {
+                    b.Navigation("UserAuthorities");
+
+                    b.Navigation("UserBranches");
                 });
 
             modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", b =>

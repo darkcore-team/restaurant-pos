@@ -40,13 +40,18 @@ public static class PosAuthenticationExtensions
                 };
             });
 
+        services.AddPosAuthorizationPolicies();
+        return services;
+    }
+
+    public static IServiceCollection AddPosAuthorizationPolicies(this IServiceCollection services)
+    {
         services.AddAuthorizationBuilder()
             .AddPolicy(PosPolicies.TenantAccess, p => p.RequireClaim(PosClaims.RestaurantId))
             .AddPolicy(PosPolicies.WaiterOrAbove, p => p.RequireRole("ADMIN", "OWNER", "MANAGER", "WAITER", "HOST"))
             .AddPolicy(PosPolicies.ManagerOrAbove, p => p.RequireRole("ADMIN", "OWNER", "MANAGER"))
             .AddPolicy(PosPolicies.CashierOrAbove, p => p.RequireRole("ADMIN", "OWNER", "MANAGER", "CASHIER"))
             .AddPolicy(PosPolicies.AdminOnly, p => p.RequireRole("ADMIN", "OWNER"));
-        
         return services;
     }
 }

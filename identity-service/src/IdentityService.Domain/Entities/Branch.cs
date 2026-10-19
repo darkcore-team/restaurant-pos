@@ -20,4 +20,7 @@ public class Branch
     public DateTimeOffset UpdatedAt { get; set; }
     public long? CreatedBy { get; set; }
     public long? UpdatedBy { get; set; }
+
+    public Restaurant Restaurant { get; set; } = null!;
+    public ICollection<UserBranch> UserBranches { get; set; } = new List<UserBranch>();
 }
