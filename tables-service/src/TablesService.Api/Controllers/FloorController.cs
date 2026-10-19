@@ -8,6 +8,7 @@ namespace TablesService.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = PosPolicies.TenantAccess)]
 [Authorize(Policy = PosPolicies.WaiterOrAbove)]
 public class FloorController(GetFloorUseCase useCase) : ControllerBase
 {

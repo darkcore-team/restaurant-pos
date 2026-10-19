@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RestaurantPos.Shared.Infrastructure.Authentication;
+using RestaurantPos.Shared.Infrastructure.Localization;
 using RestaurantPos.Shared.Infrastructure.Health;
 using RestaurantPos.Shared.Persistence;
 
@@ -34,6 +35,14 @@ public static class CatalogServiceModule
             options => options.UseSnakeCaseNamingConvention());
 
         services.AddPosAuthentication(configuration);
+        services.AddPosLocalization();
+
+        services.AddTransient<Microsoft.Extensions.Localization.IStringLocalizer>(sp =>
+        {
+            var factory = sp.GetRequiredService<Microsoft.Extensions.Localization.IStringLocalizerFactory>();
+            var assemblyName = typeof(CatalogService.Application.Messages).Assembly.GetName().Name!;
+            return factory.Create($"{assemblyName}.Resources.Messages", assemblyName);
+        });
 
         services.AddScoped<IStationRepository, StationRepository>();
         services.AddScoped<GetStationsUseCase>();

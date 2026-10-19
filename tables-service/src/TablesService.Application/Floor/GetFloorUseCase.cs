@@ -1,17 +1,18 @@
+using Microsoft.Extensions.Localization;
 using RestaurantPos.Shared.Abstractions.Common;
 using RestaurantPos.Shared.Abstractions.Tenancy;
 using TablesService.Domain.Repositories;
 
 namespace TablesService.Application.Floor;
 
-public sealed class GetFloorUseCase(IFloorRepository floorRepository, ITenantContext tenantContext)
+public sealed class GetFloorUseCase(IFloorRepository floorRepository, ITenantContext tenantContext, IStringLocalizer localizer)
 {
     public async Task<Answer<IReadOnlyList<ZoneDto>>> ExecuteAsync(CancellationToken ct = default)
     {
         var restaurantId = tenantContext.RestaurantId;
         var branchId = tenantContext.BranchId;
         if (restaurantId is null || branchId is null)
-            return Answer<IReadOnlyList<ZoneDto>>.Fail("MISSING_TENANT", "Falta restaurant_id/branch_id en el token");
+            return Answer<IReadOnlyList<ZoneDto>>.Fail("MISSING_TENANT", localizer["MissingTenant"]);
 
         var zones = await floorRepository.GetFloorAsync(restaurantId.Value, branchId.Value, ct);
 

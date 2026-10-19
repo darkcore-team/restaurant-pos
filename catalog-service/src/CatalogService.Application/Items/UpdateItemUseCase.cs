@@ -1,6 +1,7 @@
 using CatalogService.Domain.Constants;
 using CatalogService.Domain.Entities;
 using CatalogService.Domain.Repositories;
+using Microsoft.Extensions.Localization;
 using RestaurantPos.Shared.Abstractions.Common;
 
 namespace CatalogService.Application.Items;
@@ -17,24 +18,25 @@ public sealed class UpdateItemUseCase(
         long restaurantId,
         long actorId,
         UpdateItemRequest request,
-        CancellationToken ct)
+        CancellationToken ct,
+        IStringLocalizer localizer)
     {
         var product = await productRepository.GetByIdAsync(id, restaurantId, ct);
         if (product is null)
-            return Answer.Fail(ItemErrors.NotFound, "Producto no encontrado");
+            return Answer.Fail(ItemErrors.NotFound, localizer["ProductNotFound"]);
 
         if (!await categoryRepository.ExistsAsync(request.CategoryId, restaurantId, product.BranchId, ct))
-            return Answer.Fail(ItemErrors.UnknownCategory, "Categoría no encontrada");
+            return Answer.Fail(ItemErrors.UnknownCategory, localizer["UnknownCategory"]);
 
         if (!await stationRepository.ExistsAsync(request.StationId, restaurantId, ct))
-            return Answer.Fail(ItemErrors.UnknownStation, "Estación no encontrada");
+            return Answer.Fail(ItemErrors.UnknownStation, localizer["UnknownStation"]);
 
         if (request.TaxId.HasValue && !await taxRepository.ExistsAsync(request.TaxId.Value, ct))
-            return Answer.Fail(ItemErrors.UnknownTax, "Impuesto no encontrado");
+            return Answer.Fail(ItemErrors.UnknownTax, localizer["UnknownTax"]);
 
         var optionGroupIds = request.OptionGroups?.Select(l => l.OptionGroupId).Distinct().ToList() ?? new();
         if (optionGroupIds.Count > 0 && await optionGroupRepository.CountExistingAsync(optionGroupIds, restaurantId, ct) != optionGroupIds.Count)
-            return Answer.Fail(ItemErrors.UnknownOptionGroup, "Grupo de opciones no encontrado");
+            return Answer.Fail(ItemErrors.UnknownOptionGroup, localizer["UnknownOptionGroup"]);
 
         var now = DateTimeOffset.UtcNow;
         product.Name = request.Name;
@@ -75,6 +77,6 @@ public sealed class UpdateItemUseCase(
         }
 
         await productRepository.UpdateAsync(product, ct);
-        return Answer.Ok(message: "Producto actualizado");
+        return Answer.Ok(message: localizer["ProductUpdated"]);
     }
 }

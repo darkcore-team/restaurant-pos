@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RestaurantPos.Shared.Infrastructure.Authentication;
 using RestaurantPos.Shared.Infrastructure.Health;
 using RestaurantPos.Shared.Persistence;
+using RestaurantPos.Shared.Infrastructure.Localization;
 using TablesService.Application.Floor;
 using TablesService.Application.Tables;
 using TablesService.Domain.Constants;
@@ -32,6 +33,14 @@ public static class TablesServiceModule
             options => options.UseSnakeCaseNamingConvention());
 
         services.AddPosAuthentication(configuration);
+        services.AddPosLocalization();
+
+        services.AddTransient<Microsoft.Extensions.Localization.IStringLocalizer>(sp =>
+        {
+            var factory = sp.GetRequiredService<Microsoft.Extensions.Localization.IStringLocalizerFactory>();
+            var assemblyName = "TablesService.Application";
+            return factory.Create($"{assemblyName}.Resources.Messages", assemblyName);
+        });
 
         services.AddScoped<IFloorRepository, FloorRepository>();
         services.AddScoped<ITableRepository, TableRepository>();

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using RestaurantPos.Shared.Abstractions.Common;
 using TablesService.Domain.Entities;
 using TablesService.Domain.Repositories;
@@ -7,7 +8,8 @@ namespace TablesService.Application.Tables;
 
 public sealed class AssignTableUseCase(
     ITableRepository tableRepository,
-    ITableAssignmentRepository assignmentRepository)
+    ITableAssignmentRepository assignmentRepository,
+    IStringLocalizer localizer)
 {
     public async Task<Answer> ExecuteAsync(
         long tableId,
@@ -19,15 +21,15 @@ public sealed class AssignTableUseCase(
     {
         var table = await tableRepository.GetByIdAsync(tableId, restaurantId, ct);
         if (table is null)
-            return Answer.Fail("TABLE_NOT_FOUND", "Mesa no encontrada");
+            return Answer.Fail("TABLE_NOT_FOUND", localizer["TableNotFound"]);
 
         var existingOnTable = await assignmentRepository.GetActiveByTableAsync(tableId, ct);
         if (existingOnTable is not null)
-            return Answer.Fail("TABLE_ALREADY_ASSIGNED", "La mesa ya está asignada");
+            return Answer.Fail("TABLE_ALREADY_ASSIGNED", localizer["TableAlreadyAssigned"]);
 
         var existingForWaiter = await assignmentRepository.GetActiveByWaiterAsync(waiterId, ct);
         if (existingForWaiter is not null)
-            return Answer.Fail("WAITER_ALREADY_ASSIGNED", "El mesero ya tiene una mesa asignada");
+            return Answer.Fail("WAITER_ALREADY_ASSIGNED", localizer["WaiterAlreadyAssigned"]);
 
         var now = DateTimeOffset.UtcNow;
         var assignment = new TableAssignment
@@ -50,9 +52,9 @@ public sealed class AssignTableUseCase(
         }
         catch (DbUpdateException)
         {
-            return Answer.Fail("ASSIGNMENT_CONFLICT", "Conflicto de asignación (índice único)");
+            return Answer.Fail("ASSIGNMENT_CONFLICT", localizer["AssignmentConflict"]);
         }
 
-        return Answer.Ok(message: "Mesa asignada");
+        return Answer.Ok(message: localizer["TableAssigned"]);
     }
 }
