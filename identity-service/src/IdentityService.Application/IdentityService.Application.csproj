@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IdentityService.Domain\IdentityService.Domain.csproj" />
+    <ProjectReference Include="..\..\..\pos-shared\src\RestaurantPos.Shared.Abstractions\RestaurantPos.Shared.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
