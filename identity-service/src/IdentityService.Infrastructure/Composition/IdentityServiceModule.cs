@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OpenIddict.Server;
 using RestaurantPos.Shared.Infrastructure.Health;
+using RestaurantPos.Shared.Infrastructure.Localization;
 using RestaurantPos.Shared.Persistence;
 using IdentityOptions = IdentityService.Infrastructure.Configuration.IdentityOptions;
 
@@ -82,6 +83,15 @@ public static class IdentityServiceModule
                     valOptions.TokenValidationParameters.RoleClaimType = "role";
                 });
             });
+
+        services.AddPosLocalization();
+        
+        services.AddTransient<Microsoft.Extensions.Localization.IStringLocalizer>(sp =>
+        {
+            var factory = sp.GetRequiredService<Microsoft.Extensions.Localization.IStringLocalizerFactory>();
+            var assemblyName = "IdentityService.Application";
+            return factory.Create($"{assemblyName}.Resources.Messages", assemblyName);
+        });
 
         services.AddPosHealthChecks("identity-service");
         return services;

@@ -3,6 +3,7 @@ using IdentityService.Application.Users;
 using IdentityService.Domain.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using OpenIddict.Abstractions;
 using RestaurantPos.Shared.Infrastructure.Authentication;
 
@@ -13,7 +14,8 @@ namespace IdentityService.Api.Controllers;
 [Authorize(Policy = PosPolicies.AdminOnly)]
 public class BranchesController(
     IUserBranchRepository userBranchRepository,
-    IUserRepository userRepository) : ControllerBase
+    IUserRepository userRepository,
+    IStringLocalizer localizer) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetMyBranches(CancellationToken ct)
@@ -45,10 +47,10 @@ public class BranchesController(
             : outcome.ErrorCode switch
             {
                 AssignBranchErrors.AlreadyAssigned => Conflict(new ProblemDetails
-                    { Title = "Ya se asignó esta sucursal" }),
+                    { Title = localizer["BranchAlreadyAssigned"] }),
                 AssignBranchErrors.UserNotFound or AssignBranchErrors.BranchNotFound
-                    => BadRequest(new ProblemDetails() { Title = "Asignación inválida", Detail = outcome.ErrorCode }),
-                _ => BadRequest(new ProblemDetails() { Title = "Asignación inválida" })
+                    => BadRequest(new ProblemDetails() { Title = localizer["InvalidAssignment"], Detail = outcome.ErrorCode }),
+                _ => BadRequest(new ProblemDetails() { Title = localizer["InvalidAssignment"] })
             };
     }
 }

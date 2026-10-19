@@ -1,0 +1,22 @@
+using Microsoft.EntityFrameworkCore;
+using OrdersService.Domain.Constants;
+using OrdersService.Domain.Entities;
+using RestaurantPos.Shared.Persistence;
+
+namespace OrdersService.Infrastructure.Data;
+
+public sealed class OrdersServiceDbContext(DbContextOptions options) : TenantDbContext(options)
+{
+    protected override string Schema => "orders";
+
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<OrderItemModifier> OrderItemModifiers => Set<OrderItemModifier>();
+    public DbSet<OrderStatusHistory> OrderStatusHistory => Set<OrderStatusHistory>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrdersServiceDbContext).Assembly);
+    }
+}

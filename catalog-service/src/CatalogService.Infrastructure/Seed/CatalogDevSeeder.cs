@@ -12,10 +12,21 @@ public sealed class CatalogDevSeeder(CatalogServiceDbContext db)
 
     public async Task SeedAsync(CancellationToken ct = default)
     {
+        await SeedLanguagesAsync(ct);
         await SeedCurrenciesAsync(ct);
         await SeedPaymentMethodsAsync(ct);
         await SeedStationsAsync(ct);
-        await SeedCatalogAsync(ct); 
+        await SeedCatalogAsync(ct);
+    }
+
+    private async Task SeedLanguagesAsync(CancellationToken ct)
+    {
+        if (await db.Languages.AnyAsync(ct)) return;
+        db.Languages.AddRange(
+            new Language { Code = "es", Name = "Español", Status = RecordStatus.Active, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow },
+            new Language { Code = "en", Name = "English", Status = RecordStatus.Active, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow }
+        );
+        await db.SaveChangesAsync(ct);
     }
 
     private async Task SeedCurrenciesAsync(CancellationToken ct)

@@ -6,6 +6,7 @@ using IdentityService.Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
@@ -19,7 +20,8 @@ public sealed class OpenIddictPasswordGrantHandler(
     IdentityServiceDbContext db,
     IPasswordHasher<User> passwordHasher,
     IOptions<IdentityOptions> options,
-    IHttpContextAccessor httpContextAccessor) : IOpenIddictServerHandler<OpenIddictServerEvents.HandleTokenRequestContext>
+    IHttpContextAccessor httpContextAccessor,
+    IStringLocalizer localizer) : IOpenIddictServerHandler<OpenIddictServerEvents.HandleTokenRequestContext>
 {
     private static readonly TimeSpan LockoutDuration = TimeSpan.FromMinutes(15);
 
@@ -35,7 +37,7 @@ public sealed class OpenIddictPasswordGrantHandler(
         
         if (string.IsNullOrWhiteSpace(context.Request.Username) || string.IsNullOrWhiteSpace(context.Request.Password))
         {
-            context.Reject(OpenIddictConstants.Errors.InvalidGrant, "The username or password is required");
+            context.Reject(OpenIddictConstants.Errors.InvalidGrant, localizer["UsernameOrPasswordRequired"]);
             return;
         }
 
@@ -45,21 +47,21 @@ public sealed class OpenIddictPasswordGrantHandler(
 
         if (user == null)
         {
-            context.Reject(OpenIddictConstants.Errors.InvalidGrant, "The username or password is incorrect");
+            context.Reject(OpenIddictConstants.Errors.InvalidGrant, localizer["InvalidCredentials"]);
             return;
         };
 
         if (user.Status != RecordStatus.Active)
         {
             await RecordAttemptAsync(username, user.Id, wasSuccessful: false, failureReason: "INACTIVE_ACCOUNT");
-            context.Reject(OpenIddictConstants.Errors.InvalidGrant, "The account is not active");
+            context.Reject(OpenIddictConstants.Errors.InvalidGrant, localizer["AccountInactive"]);
             return;
         }
 
         if (user.LockoutEnd > DateTimeOffset.UtcNow)
         {
             await RecordAttemptAsync(username, user.Id, wasSuccessful: false, failureReason: "LOCKED_OUT");
-            context.Reject(OpenIddictConstants.Errors.InvalidGrant, "The account is locked");
+            context.Reject(OpenIddictConstants.Errors.InvalidGrant, localizer["AccountLocked"]);
             return;
         }
 
@@ -76,7 +78,7 @@ public sealed class OpenIddictPasswordGrantHandler(
             
             await db.SaveChangesAsync();
             await RecordAttemptAsync(username, user.Id, wasSuccessful: false, failureReason: "BAD_PASSWORD");
-            context.Reject(OpenIddictConstants.Errors.InvalidGrant, "The username or password is incorrect");
+            context.Reject(OpenIddictConstants.Errors.InvalidGrant, localizer["InvalidCredentials"]);
             return;
         }
 

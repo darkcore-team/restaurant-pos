@@ -1,6 +1,7 @@
 using CatalogService.Domain.Constants;
 using CatalogService.Domain.Entities;
 using CatalogService.Domain.Repositories;
+using Microsoft.Extensions.Localization;
 using RestaurantPos.Shared.Abstractions.Common;
 
 namespace CatalogService.Application.Items;
@@ -17,20 +18,21 @@ public sealed class CreateItemUseCase(
         long branchId,
         long actorId,
         CreateItemRequest request,
-        CancellationToken ct)
+        CancellationToken ct,
+        IStringLocalizer localizer)
     {
         if (!await categoryRepository.ExistsAsync(request.CategoryId, restaurantId, branchId, ct))
-            return Answer<long?>.Fail(ItemErrors.UnknownCategory, "Categoría no encontrada");
+            return Answer<long?>.Fail(ItemErrors.UnknownCategory, localizer["UnknownCategory"]);
 
         if (!await stationRepository.ExistsAsync(request.StationId, restaurantId, ct))
-            return Answer<long?>.Fail(ItemErrors.UnknownStation, "Estación no encontrada");
+            return Answer<long?>.Fail(ItemErrors.UnknownStation, localizer["UnknownStation"]);
 
         if (request.TaxId.HasValue && !await taxRepository.ExistsAsync(request.TaxId.Value, ct))
-            return Answer<long?>.Fail(ItemErrors.UnknownTax, "Impuesto no encontrado");
+            return Answer<long?>.Fail(ItemErrors.UnknownTax, localizer["UnknownTax"]);
 
         var optionGroupIds = request.OptionGroups?.Select(l => l.OptionGroupId).Distinct().ToList() ?? new();
         if (optionGroupIds.Count > 0 && await optionGroupRepository.CountExistingAsync(optionGroupIds, restaurantId, ct) != optionGroupIds.Count)
-            return Answer<long?>.Fail(ItemErrors.UnknownOptionGroup, "Grupo de opciones no encontrado");
+            return Answer<long?>.Fail(ItemErrors.UnknownOptionGroup, localizer["UnknownOptionGroup"]);
 
         var now = DateTimeOffset.UtcNow;
         var product = new Product
@@ -78,6 +80,6 @@ public sealed class CreateItemUseCase(
         }
 
         await productRepository.CreateAsync(product, ct);
-        return Answer<long?>.Ok(product.Id, "Producto creado");
+        return Answer<long?>.Ok(product.Id, localizer["ProductCreated"]);
     }
 }
