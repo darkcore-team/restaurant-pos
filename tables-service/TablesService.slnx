@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TablesService.Api/TablesService.Api.csproj" />
+    <Project Path="src/TablesService.Application/TablesService.Application.csproj" />
+    <Project Path="src/TablesService.Domain/TablesService.Domain.csproj" />
+    <Project Path="src/TablesService.Infrastructure/TablesService.Infrastructure.csproj" />
+  </Folder>
+</Solution>
