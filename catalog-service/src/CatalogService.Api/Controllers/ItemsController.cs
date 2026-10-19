@@ -1,6 +1,7 @@
 using CatalogService.Application.Items;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using RestaurantPos.Shared.Abstractions.Common;
 using RestaurantPos.Shared.Infrastructure.Authentication;
 
@@ -13,7 +14,8 @@ namespace CatalogService.Api.Controllers;
 public class ItemsController(
     CreateItemUseCase createUseCase,
     UpdateItemUseCase updateUseCase,
-    DeleteItemUseCase deleteUseCase) : ControllerBase
+    DeleteItemUseCase deleteUseCase,
+    IStringLocalizer localizer) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateItemRequest request, CancellationToken ct)
@@ -22,7 +24,7 @@ public class ItemsController(
         var branchId = User.RequireBranchId();
         var actorId = User.RequireUserId();
 
-        var answer = await createUseCase.ExecuteAsync(restaurantId, branchId, actorId, request, ct);
+        var answer = await createUseCase.ExecuteAsync(restaurantId, branchId, actorId, request, ct, localizer);
         return answer.Success ? StatusCode(201, answer) : BadRequest(answer);
     }
 
@@ -32,7 +34,7 @@ public class ItemsController(
         var restaurantId = User.RequireRestaurantId();
         var actorId = User.RequireUserId();
 
-        var answer = await updateUseCase.ExecuteAsync(id, restaurantId, actorId, request, ct);
+        var answer = await updateUseCase.ExecuteAsync(id, restaurantId, actorId, request, ct, localizer);
         if (answer.Success) return Ok(answer);
         return answer.Code == ItemErrors.NotFound ? NotFound(answer) : BadRequest(answer);
     }
@@ -43,7 +45,7 @@ public class ItemsController(
         var restaurantId = User.RequireRestaurantId();
         var actorId = User.RequireUserId();
 
-        var answer = await deleteUseCase.ExecuteAsync(id, restaurantId, actorId, ct);
+        var answer = await deleteUseCase.ExecuteAsync(id, restaurantId, actorId, ct, localizer);
         if (answer.Success) return Ok(answer);
         return NotFound(answer);
     }
