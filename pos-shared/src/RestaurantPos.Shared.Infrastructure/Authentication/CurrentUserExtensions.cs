@@ -17,6 +17,15 @@ public static class CurrentUserExtensions
         user.RestaurantId() ?? throw new InvalidOperationException(
             "The request has no restaurant_id claim. The endpoint is missing " +
             $"the {PosPolicies.TenantAccess} policy.");
+
+    public static long RequireBranchId(this ClaimsPrincipal user) =>
+        user.BranchId() ?? throw new InvalidOperationException(
+            "The request has no branch_id claim. The endpoint is missing " +
+            $"the {PosPolicies.TenantAccess} policy.");
+
+    public static long RequireUserId(this ClaimsPrincipal user) =>
+        user.UserId() ?? throw new InvalidOperationException(
+            "The request has no subject claim.");
     
     private static long? ReadGuid(this ClaimsPrincipal user, string claim) =>
         long.TryParse(user.FindFirst(claim)?.Value, out var id) ? id : null;
