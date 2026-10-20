@@ -11,6 +11,8 @@ using OrdersService.Domain.Constants;
 using OrdersService.Domain.Repositories;
 using OrdersService.Infrastructure.Data;
 using OrdersService.Infrastructure.Repositories;
+using OrdersService.Infrastructure.Workers;
+using RestaurantPos.Shared.Infrastructure.Messaging;
 using RestaurantPos.Shared.Infrastructure.Localization;
 
 namespace OrdersService.Infrastructure.Composition;
@@ -36,6 +38,7 @@ public static class OrdersServiceModule
             },
             options => options.UseSnakeCaseNamingConvention());
 
+        services.AddPosMessaging(configuration);
         services.AddPosAuthentication(configuration);
         services.AddPosLocalization();
 
@@ -57,6 +60,8 @@ public static class OrdersServiceModule
         services.AddScoped<GetActiveOrdersUseCase>();
         services.AddScoped<RequestBillUseCase>();
         services.AddScoped<CancelOrderUseCase>();
+
+        services.AddHostedService<PaymentRegisteredConsumer>();
 
         services.AddPosHealthChecks("orders-service");
         return services;

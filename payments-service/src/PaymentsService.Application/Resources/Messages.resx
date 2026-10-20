@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Ok" xml:space="preserve"><value>OK</value></data>
+    <data name="CashRegisterNotFound" xml:space="preserve"><value>Caja no encontrada</value></data>
+    <data name="CashRegisterInactive" xml:space="preserve"><value>La caja está inactiva</value></data>
+    <data name="SessionAlreadyOpen" xml:space="preserve"><value>La caja ya tiene una sesión abierta</value></data>
+    <data name="SessionNotFound" xml:space="preserve"><value>Sesión de caja no encontrada</value></data>
+    <data name="SessionAlreadyClosed" xml:space="preserve"><value>La sesión de caja ya está cerrada</value></data>
+    <data name="NoActiveSession" xml:space="preserve"><value>No hay sesión de caja abierta en esta sucursal</value></data>
+    <data name="SessionOpened" xml:space="preserve"><value>Sesión de caja abierta</value></data>
+    <data name="SessionClosed" xml:space="preserve"><value>Sesión de caja cerrada</value></data>
+    <data name="PaymentMethodInvalid" xml:space="preserve"><value>Método de pago no válido</value></data>
+    <data name="TipGreaterThanAmount" xml:space="preserve">
+      <value>Tip cannot exceed payment amount</value>
+    </data>
+    <data name="OrderTotalInvalid" xml:space="preserve">
+      <value>Order total is invalid</value>
+    </data>
+    <data name="PaymentExceedsBalance" xml:space="preserve">
+      <value>Payment exceeds the order's outstanding balance</value>
+    </data>
+    <data name="CashTenderedInsufficient" xml:space="preserve">
+      <value>Cash tendered is insufficient</value>
+    </data>
+    <data name="ReferenceRequired" xml:space="preserve">
+      <value>This payment method requires a reference</value>
+    </data>
+    <data name="SessionNotOpen" xml:space="preserve">
+      <value>The indicated cash session is not open</value>
+    </data>
+    <data name="PaymentCreated" xml:space="preserve">
+      <value>Payment registered</value>
+    </data>
+    <data name="PaymentCancelled" xml:space="preserve">
+      <value>Payment cancelled</value>
+    </data>
+    <data name="PaymentNotFound" xml:space="preserve">
+      <value>Payment not found</value>
+    </data>
+    <data name="PaymentNotCancelable" xml:space="preserve">
+      <value>Only completed payments can be cancelled</value>
+    </data>
+    <data name="TicketNotFound" xml:space="preserve">
+      <value>Ticket not found</value>
+    </data>
+</root>

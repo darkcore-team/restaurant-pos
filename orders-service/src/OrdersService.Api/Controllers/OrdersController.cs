@@ -9,7 +9,6 @@ namespace OrdersService.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Policy = PosPolicies.TenantAccess)]
-[Authorize(Policy = PosPolicies.WaiterOrAbove)]
 public class OrdersController(
     OpenOrderUseCase openUseCase,
     GetOrderUseCase getUseCase,
@@ -22,6 +21,7 @@ public class OrdersController(
     CancelOrderUseCase cancelUseCase) : ControllerBase
 {
     [HttpPost]
+    [Authorize(Policy = PosPolicies.WaiterOrAbove)]
     public async Task<IActionResult> Open([FromBody] CreateOrderRequest request, CancellationToken ct)
     {
         var restaurantId = User.RequireRestaurantId();
@@ -35,6 +35,7 @@ public class OrdersController(
     }
 
     [HttpGet("{id:long}")]
+    [Authorize(Policy = "OrderRead")]
     public async Task<IActionResult> Get(long id, CancellationToken ct)
     {
         var restaurantId = User.RequireRestaurantId();
@@ -45,6 +46,7 @@ public class OrdersController(
     }
 
     [HttpPost("{id:long}/items")]
+    [Authorize(Policy = PosPolicies.WaiterOrAbove)]
     public async Task<IActionResult> AddItems(long id, [FromBody] AddItemsRequest request, CancellationToken ct)
     {
         var restaurantId = User.RequireRestaurantId();
@@ -58,6 +60,7 @@ public class OrdersController(
     }
 
     [HttpDelete("{id:long}/items/{itemId:long}")]
+    [Authorize(Policy = PosPolicies.WaiterOrAbove)]
     public async Task<IActionResult> VoidItem(long id, long itemId, [FromBody] VoidItemRequest request, CancellationToken ct)
     {
         var restaurantId = User.RequireRestaurantId();
@@ -71,6 +74,7 @@ public class OrdersController(
     }
 
     [HttpPost("{id:long}/send")]
+    [Authorize(Policy = PosPolicies.WaiterOrAbove)]
     public async Task<IActionResult> Send(long id, CancellationToken ct)
     {
         var restaurantId = User.RequireRestaurantId();
@@ -83,6 +87,7 @@ public class OrdersController(
     }
 
     [HttpPost("{id:long}/items/{itemId:long}/status")]
+    [Authorize(Policy = PosPolicies.WaiterOrAbove)]
     public async Task<IActionResult> UpdateItemStatus(long id, long itemId, [FromBody] UpdateItemStatusRequest request, CancellationToken ct)
     {
         var restaurantId = User.RequireRestaurantId();
@@ -95,6 +100,7 @@ public class OrdersController(
     }
 
     [HttpGet("active")]
+    [Authorize(Policy = "OrderRead")]
     public async Task<IActionResult> GetActive(CancellationToken ct)
     {
         var restaurantId = User.RequireRestaurantId();
@@ -106,6 +112,7 @@ public class OrdersController(
     }
 
     [HttpPost("{id:long}/request-bill")]
+    [Authorize(Policy = PosPolicies.WaiterOrAbove)]
     public async Task<IActionResult> RequestBill(long id, CancellationToken ct)
     {
         var restaurantId = User.RequireRestaurantId();
@@ -118,6 +125,7 @@ public class OrdersController(
     }
 
     [HttpPost("{id:long}/cancel")]
+    [Authorize(Policy = PosPolicies.WaiterOrAbove)]
     public async Task<IActionResult> Cancel(long id, [FromBody] CancelOrderRequest? request, CancellationToken ct)
     {
         var restaurantId = User.RequireRestaurantId();
