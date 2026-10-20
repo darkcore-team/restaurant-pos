@@ -2,6 +2,7 @@ using TablesService.Infrastructure.Composition;
 using TablesService.Infrastructure.Seed;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using RestaurantPos.Shared.Infrastructure.Localization;
+using TablesService.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 app.UsePosLocalization();
+app.UseGlobalExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();
 

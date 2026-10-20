@@ -453,6 +453,55 @@ namespace OrdersService.Infrastructure.Migrations
                     b.ToTable("order_item_modifiers", "orders");
                 });
 
+            modelBuilder.Entity("OrdersService.Domain.Entities.OrderPayment", b =>
+                {
+                    b.Property<Guid>("PaymentPublicId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("payment_public_id");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)")
+                        .HasColumnName("amount");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<DateTimeOffset>("OccurredOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_on");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("order_id");
+
+                    b.Property<long>("RestaurantId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("restaurant_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.Property<decimal>("TipAmount")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)")
+                        .HasColumnName("tip_amount");
+
+                    b.HasKey("PaymentPublicId")
+                        .HasName("pk_order_payments");
+
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_order_payments_order_id");
+
+                    b.ToTable("order_payments", "orders");
+                });
+
             modelBuilder.Entity("OrdersService.Domain.Entities.OrderStatusHistory", b =>
                 {
                     b.Property<long>("Id")

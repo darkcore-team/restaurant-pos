@@ -38,7 +38,7 @@ public abstract class RabbitMqConsumer(
         
         await channel.QueueDeclareAsync(
             queue: queue,
-            durable: false,
+            durable: true,
             exclusive: false,
             autoDelete: false,
             arguments: new Dictionary<string, object?>

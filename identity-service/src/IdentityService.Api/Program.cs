@@ -3,6 +3,7 @@ using IdentityService.Infrastructure.Seed;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using OpenIddict.Validation.AspNetCore;
 using RestaurantPos.Shared.Infrastructure.Authentication;
+using IdentityService.Api.Middleware;
 using RestaurantPos.Shared.Infrastructure.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,7 @@ var app = builder.Build();
 
 // Middlewares
 app.UsePosLocalization();
+app.UseGlobalExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();
 
