@@ -6,6 +6,11 @@ using RestaurantPos.Shared.Infrastructure.Localization;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOrdersService(builder.Configuration);
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("OrderRead",
+        policy => policy.RequireRole("ADMIN", "OWNER", "MANAGER", "WAITER", "HOST", "CASHIER"));
+});
 builder.Services.AddControllers();
 
 var app = builder.Build();
