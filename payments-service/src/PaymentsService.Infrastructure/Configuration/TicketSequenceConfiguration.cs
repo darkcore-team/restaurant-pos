@@ -12,5 +12,6 @@ public class TicketSequenceConfiguration : IEntityTypeConfiguration<TicketSequen
         builder.HasKey(s => s.Id);
         builder.Property(s => s.Id).UseIdentityByDefaultColumn();
         builder.Property(s => s.LastNumber).HasDefaultValue(0L);
+        builder.HasIndex(s => new { s.RestaurantId, s.BranchId }).IsUnique();
     }
 }

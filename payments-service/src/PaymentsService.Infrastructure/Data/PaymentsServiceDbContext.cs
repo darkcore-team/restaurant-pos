@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PaymentsService.Domain.Constants;
 using PaymentsService.Domain.Entities;
 using RestaurantPos.Shared.Persistence;
+using RestaurantPos.Shared.Persistence.Outbox;
 
 namespace PaymentsService.Infrastructure.Data;
 
@@ -19,5 +20,6 @@ public sealed class PaymentsServiceDbContext(DbContextOptions options) : TenantD
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(PaymentsServiceDbContext).Assembly);
+        modelBuilder.ConfigureOutbox("outbox_messages");
     }
 }

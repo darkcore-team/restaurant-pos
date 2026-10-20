@@ -260,6 +260,12 @@ namespace PaymentsService.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
+                    b.Property<string>("MethodCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("method_code");
+
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint")
                         .HasColumnName("order_id");
@@ -414,7 +420,67 @@ namespace PaymentsService.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_ticket_sequences");
 
+                    b.HasIndex("RestaurantId", "BranchId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_ticket_sequences_restaurant_id_branch_id");
+
                     b.ToTable("ticket_sequences", "payments");
+                });
+
+            modelBuilder.Entity("RestaurantPos.Shared.Persistence.Outbox.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer")
+                        .HasColumnName("attempts");
+
+                    b.Property<long?>("BranchId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_id");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("event_type");
+
+                    b.Property<DateTimeOffset?>("FailedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("failed_on");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("last_error");
+
+                    b.Property<DateTimeOffset>("OccurredOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_on");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("jsonb");
+
+                    b.Property<DateTimeOffset?>("PublishedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("published_on");
+
+                    b.Property<long?>("RestaurantId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("restaurant_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_outbox_messages");
+
+                    b.HasIndex("PublishedOn", "OccurredOn")
+                        .HasDatabaseName("ix_outbox_messages_pending");
+
+                    b.ToTable("outbox_messages", "payments");
                 });
 
             modelBuilder.Entity("PaymentsService.Domain.Entities.CashSession", b =>

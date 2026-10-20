@@ -13,6 +13,7 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.HasKey(p => p.Id);
         builder.Property(p => p.Id).UseIdentityByDefaultColumn();
         builder.Property(p => p.PublicId).HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(p => p.MethodCode).HasMaxLength(20).IsRequired();
         builder.Property(p => p.Amount).HasPrecision(12, 2);
         builder.Property(p => p.AmountTendered).HasPrecision(12, 2).HasDefaultValue(0m);
         builder.Property(p => p.ChangeGiven).HasPrecision(12, 2).HasDefaultValue(0m);

@@ -11,6 +11,7 @@ public class Payment
     public long OrderId { get; set; }
     public long? CashSessionId { get; set; }
     public long PaymentMethodId { get; set; }
+    public string MethodCode { get; set; } = null!;
     public decimal Amount { get; set; }
     public decimal AmountTendered { get; set; }
     public decimal ChangeGiven { get; set; }

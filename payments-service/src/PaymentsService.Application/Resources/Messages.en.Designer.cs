@@ -98,5 +98,11 @@ namespace PaymentsService.Application.Resources {
                 return ResourceManager.GetString("SessionClosed", resourceCulture);
             }
         }
+        
+        internal static string PaymentMethodInvalid {
+            get {
+                return ResourceManager.GetString("PaymentMethodInvalid", resourceCulture);
+            }
+        }
     }
 }

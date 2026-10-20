@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using PaymentsService.Application.CashRegisters;
 using PaymentsService.Application.CashSessions;
+using PaymentsService.Application.Payments;
 using RestaurantPos.Shared.Infrastructure.Authentication;
 using RestaurantPos.Shared.Infrastructure.Health;
 using RestaurantPos.Shared.Persistence;
@@ -12,6 +13,8 @@ using PaymentsService.Domain.Repositories;
 using PaymentsService.Infrastructure.Data;
 using PaymentsService.Infrastructure.Repositories;
 using RestaurantPos.Shared.Infrastructure.Localization;
+using RestaurantPos.Shared.Infrastructure.Messaging;
+using RestaurantPos.Shared.Persistence.Outbox;
 
 namespace PaymentsService.Infrastructure.Composition;
 
@@ -46,12 +49,22 @@ public static class PaymentsServiceModule
         services.AddScoped<ICashRegisterRepository, CashRegisterRepository>();
         services.AddScoped<ICashSessionRepository, CashSessionRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
+        services.AddScoped<ITicketRepository, TicketRepository>();
+        
         services.AddScoped<GetCashRegistersUseCase>();
         services.AddScoped<OpenCashSessionUseCase>();
         services.AddScoped<CloseCashSessionUseCase>();
         services.AddScoped<GetActiveCashSessionUseCase>();
+        services.AddScoped<RegisterPaymentUseCase>();
+        services.AddScoped<CancelPaymentUseCase>();
+        services.AddScoped<GetOrderPaymentsUseCase>();
+        services.AddScoped<GetTicketUseCase>();
 
         services.AddPosHealthChecks("payments-service");
+
+        services.AddPosMessaging(configuration);
+        services.AddOutboxPublisher<PaymentsServiceDbContext>(configuration);
+        
         return services;
     }
 }

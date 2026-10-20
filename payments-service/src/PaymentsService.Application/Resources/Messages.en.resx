@@ -27,4 +27,40 @@
     <data name="NoActiveSession" xml:space="preserve"><value>No open cash session for this branch</value></data>
     <data name="SessionOpened" xml:space="preserve"><value>Cash session opened</value></data>
     <data name="SessionClosed" xml:space="preserve"><value>Cash session closed</value></data>
+    <data name="PaymentMethodInvalid" xml:space="preserve">
+        <value>Invalid payment method</value>
+    </data>
+    <data name="TipGreaterThanAmount" xml:space="preserve">
+      <value>La propina no puede superar el monto del pago</value>
+    </data>
+    <data name="OrderTotalInvalid" xml:space="preserve">
+      <value>El total de la orden no es válido</value>
+    </data>
+    <data name="PaymentExceedsBalance" xml:space="preserve">
+      <value>El pago supera el saldo pendiente de la orden</value>
+    </data>
+    <data name="CashTenderedInsufficient" xml:space="preserve">
+      <value>El efectivo entregado es insuficiente</value>
+    </data>
+    <data name="ReferenceRequired" xml:space="preserve">
+      <value>Este método de pago requiere una referencia</value>
+    </data>
+    <data name="SessionNotOpen" xml:space="preserve">
+      <value>La sesión de caja indicada no está abierta</value>
+    </data>
+    <data name="PaymentCreated" xml:space="preserve">
+      <value>Pago registrado</value>
+    </data>
+    <data name="PaymentCancelled" xml:space="preserve">
+      <value>Pago anulado</value>
+    </data>
+    <data name="PaymentNotFound" xml:space="preserve">
+      <value>Pago no encontrado</value>
+    </data>
+    <data name="PaymentNotCancelable" xml:space="preserve">
+      <value>Solo se pueden anular pagos completados</value>
+    </data>
+    <data name="TicketNotFound" xml:space="preserve">
+      <value>Ticket no encontrado</value>
+    </data>
 </root>
