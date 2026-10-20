@@ -13,6 +13,7 @@ public sealed class OrdersServiceDbContext(DbContextOptions options) : TenantDbC
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<OrderItemModifier> OrderItemModifiers => Set<OrderItemModifier>();
     public DbSet<OrderStatusHistory> OrderStatusHistory => Set<OrderStatusHistory>();
+    public DbSet<OrderPayment> OrderPayments => Set<OrderPayment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

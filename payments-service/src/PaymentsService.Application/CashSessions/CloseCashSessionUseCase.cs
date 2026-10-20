@@ -27,7 +27,7 @@ public class CloseCashSessionUseCase(
             return Answer<CloseCashSessionResponse>.Fail("SESSION_ALREADY_CLOSED", localizer["SessionAlreadyClosed"]);
 
         var keptCash = await paymentRepository.SumKeptBySessionAsync(session.Id, ct);
-        var expected = Math.Round(session.OpeningFloat = keptCash, 2);
+        var expected = Math.Round(session.OpeningFloat + keptCash, 2);
         var difference = Math.Round(request.CountedAmount - expected, 2);
 
         var now = DateTimeOffset.UtcNow;

@@ -62,13 +62,14 @@ public class PaymentRepository(PaymentsServiceDbContext db) : IPaymentRepository
         if (ticket is not null)
         {
             // atomic upsert
-            var next = await db.Database.SqlQuery<long>($@"
+            var rows = await db.Database.SqlQuery<long>($@"
                 INSERT INTO payments.ticket_sequences (restaurant_id, branch_id, last_number)
                 VALUES ({ticket.RestaurantId}, {ticket.BranchId}, 1)
                 ON CONFLICT (restaurant_id, branch_id)
                 DO UPDATE SET last_number = payments.ticket_sequences.last_number + 1
                 RETURNING last_number
-            ").SingleAsync(ct);
+            ").ToListAsync(ct);
+            var next = rows.Single();
 
             ticket.TicketNumber = $"TKT-{ticket.BranchId:D3}-{next:D6}";
             db.Tickets.Add(ticket);

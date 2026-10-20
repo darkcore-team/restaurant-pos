@@ -12,6 +12,7 @@ using PaymentsService.Domain.Constants;
 using PaymentsService.Domain.Repositories;
 using PaymentsService.Infrastructure.Data;
 using PaymentsService.Infrastructure.Repositories;
+using PaymentsService.Infrastructure.Seed;
 using RestaurantPos.Shared.Infrastructure.Localization;
 using RestaurantPos.Shared.Infrastructure.Messaging;
 using RestaurantPos.Shared.Persistence.Outbox;
@@ -59,6 +60,7 @@ public static class PaymentsServiceModule
         services.AddScoped<CancelPaymentUseCase>();
         services.AddScoped<GetOrderPaymentsUseCase>();
         services.AddScoped<GetTicketUseCase>();
+        services.AddScoped<PaymentsDevSeeder>();
 
         services.AddPosHealthChecks("payments-service");
 
