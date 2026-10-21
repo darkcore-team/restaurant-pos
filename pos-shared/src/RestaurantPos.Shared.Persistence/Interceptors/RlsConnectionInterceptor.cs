@@ -37,8 +37,13 @@ public sealed class RlsConnectionInterceptor(ITenantContext tenant) : DbConnecti
 
     private async Task Clear(NpgsqlConnection connection, CancellationToken ct = default)
     {
-        await using var cmd = connection.CreateCommand();
-        cmd.CommandText = $"SELECT set_config('{SettingName}', '', false)";
-        await cmd.ExecuteNonQueryAsync(ct);
+        if (connection.State != System.Data.ConnectionState.Open) return;
+        try
+        {
+            await using var cmd = connection.CreateCommand();
+            cmd.CommandText = $"SELECT set_config('{SettingName}', '', false)";
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        catch { /* connection already closed; ignore */ }
     }
 }
