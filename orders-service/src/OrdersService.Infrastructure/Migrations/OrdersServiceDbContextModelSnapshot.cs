@@ -577,6 +577,62 @@ namespace OrdersService.Infrastructure.Migrations
                     b.ToTable("order_status_history", "orders");
                 });
 
+            modelBuilder.Entity("RestaurantPos.Shared.Persistence.Outbox.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer")
+                        .HasColumnName("attempts");
+
+                    b.Property<long?>("BranchId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("branch_id");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("event_type");
+
+                    b.Property<DateTimeOffset?>("FailedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("failed_on");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("last_error");
+
+                    b.Property<DateTimeOffset>("OccurredOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_on");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("jsonb");
+
+                    b.Property<DateTimeOffset?>("PublishedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("published_on");
+
+                    b.Property<long?>("RestaurantId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("restaurant_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_outbox_messages");
+
+                    b.HasIndex("PublishedOn", "OccurredOn")
+                        .HasDatabaseName("ix_outbox_messages_pending");
+
+                    b.ToTable("outbox_messages", "orders");
+                });
+
             modelBuilder.Entity("OrdersService.Domain.Entities.OrderItem", b =>
                 {
                     b.HasOne("OrdersService.Domain.Entities.Order", "Order")

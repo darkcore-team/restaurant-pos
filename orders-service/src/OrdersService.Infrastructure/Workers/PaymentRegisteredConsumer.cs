@@ -4,12 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrdersService.Domain.Constants;
+using OrdersService.Domain.Events;
 using OrdersService.Domain.Entities;
 using OrdersService.Infrastructure.Data;
 using RestaurantPos.Shared.Abstractions.Events;
 using RestaurantPos.Shared.Abstractions.Tenancy;
 using RestaurantPos.Shared.Infrastructure.Messaging;
-using RestaurantPos.Shared.Persistence;
+using RestaurantPos.Shared.Persistence.Outbox;
 
 namespace OrdersService.Infrastructure.Workers;
 
@@ -56,7 +57,7 @@ public sealed class PaymentRegisteredConsumer(
         var already = await db.OrderPayments.AnyAsync(x => x.PaymentPublicId == p.PaymentPublicId, ct);
         if (already) return;
 
-        var order = await db.Orders.FirstOrDefaultAsync(o => o.Id == p.OrderId && o.RestaurantId == envelope.RestaurantId!.Value, ct);
+        var order = await db.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == p.OrderId && o.RestaurantId == envelope.RestaurantId!.Value, ct);
         if (order is null) return;
 
         db.OrderPayments.Add(new OrderPayment
@@ -71,6 +72,7 @@ public sealed class PaymentRegisteredConsumer(
             CreatedAt = DateTimeOffset.UtcNow
         });
 
+        await db.SaveChangesAsync(ct);
         await RecomputeAsync(db, order, ct);
         await db.SaveChangesAsync(ct);
     }
@@ -84,7 +86,8 @@ public sealed class PaymentRegisteredConsumer(
         if (row.Status == "CANCELLED") return;
 
         row.Status = "CANCELLED";
-        var order = await db.Orders.FirstOrDefaultAsync(o => o.Id == p.OrderId && o.RestaurantId == envelope.RestaurantId!.Value, ct);
+        await db.SaveChangesAsync(ct);
+        var order = await db.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == p.OrderId && o.RestaurantId == envelope.RestaurantId!.Value, ct);
         if (order is null) return;
 
         await RecomputeAsync(db, order, ct);
@@ -119,6 +122,21 @@ public sealed class PaymentRegisteredConsumer(
                 Reason = "Payment completed",
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
+            });
+
+            db.AddDomainEvent(new OrderClosedEvent
+            {
+                RestaurantId = order.RestaurantId,
+                BranchId = order.BranchId,
+                OrderId = order.Id,
+                OrderNumber = order.OrderNumber,
+                OpenedBy = order.OpenedBy,
+                Total = order.Total,
+                DiscountAmount = order.DiscountAmount,
+                TaxAmount = order.TaxAmount,
+                TipAmount = order.TipAmount,
+                ClosedAt = order.ClosedAt!.Value,
+                Items = order.Items.Select(i => new OrderClosedItem(i.Name, i.Quantity, i.UnitPrice, i.LineTotal)).ToList()
             });
         }
     }

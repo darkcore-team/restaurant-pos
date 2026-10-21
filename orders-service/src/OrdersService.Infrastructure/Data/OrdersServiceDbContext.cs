@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using OrdersService.Domain.Constants;
 using OrdersService.Domain.Entities;
 using RestaurantPos.Shared.Persistence;
+using RestaurantPos.Shared.Persistence.Outbox;
 
 namespace OrdersService.Infrastructure.Data;
 
@@ -19,5 +19,6 @@ public sealed class OrdersServiceDbContext(DbContextOptions options) : TenantDbC
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrdersServiceDbContext).Assembly);
+        modelBuilder.ConfigureOutbox("outbox_messages");
     }
 }
