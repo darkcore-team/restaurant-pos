@@ -12,7 +12,7 @@ public record EventEnvelope(
 {
     public static EventEnvelope From<T>(T @event) where T : DomainEvent
     {
-        var data = JsonSerializer.SerializeToElement(@event, PosJson.Options);
+        var data = JsonSerializer.SerializeToElement(@event, @event.GetType(), PosJson.Options);
         return new EventEnvelope(
             @event.EventId,
             @event.EventType,
