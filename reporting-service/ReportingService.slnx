@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ReportingService.Api/ReportingService.Api.csproj" />
+    <Project Path="src/ReportingService.Application/ReportingService.Application.csproj" />
+    <Project Path="src/ReportingService.Domain/ReportingService.Domain.csproj" />
+    <Project Path="src/ReportingService.Infrastructure/ReportingService.Infrastructure.csproj" />
+  </Folder>
+</Solution>

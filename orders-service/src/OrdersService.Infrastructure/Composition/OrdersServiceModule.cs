@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RestaurantPos.Shared.Infrastructure.Authentication;
 using RestaurantPos.Shared.Infrastructure.Health;
 using RestaurantPos.Shared.Persistence;
+using RestaurantPos.Shared.Persistence.Outbox;
 using Microsoft.Extensions.Localization;
 using OrdersService.Application.Kds;
 using OrdersService.Application.Orders;
@@ -27,6 +28,7 @@ public static class OrdersServiceModule
             ?? throw new InvalidOperationException("Connection string 'OrdersDb' not found");
 
         services.AddTenantHttpContext();
+        services.AddTenantBackgroundContext();
         services.AddTenantDbContext<OrdersServiceDbContext>(
             connectionString, "orders",
             npgsql =>
@@ -39,6 +41,7 @@ public static class OrdersServiceModule
             options => options.UseSnakeCaseNamingConvention());
 
         services.AddPosMessaging(configuration);
+        services.AddOutboxPublisher<OrdersServiceDbContext>(configuration);
         services.AddPosAuthentication(configuration);
         services.AddPosLocalization();
 
