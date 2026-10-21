@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
@@ -43,6 +44,12 @@ public static class TenantDbContextExtensions
     {
         services.AddSingleton<BackgroundTenantContext>();
         services.AddSingleton<ITenantContextSetter>(sp => sp.GetRequiredService<BackgroundTenantContext>());
+        services.AddScoped<ITenantContext>(sp =>
+        {
+            var bg = sp.GetRequiredService<BackgroundTenantContext>();
+            if (bg.RestaurantId.HasValue) return bg;
+            return new ScopedTenantContext(sp.GetRequiredService<IHttpContextAccessor>());
+        });
         return services;
     }
 }
