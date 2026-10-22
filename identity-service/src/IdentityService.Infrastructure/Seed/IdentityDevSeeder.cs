@@ -3,7 +3,9 @@ using IdentityService.Domain.Entities;
 using IdentityService.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
+using PosIdentityOptions = IdentityService.Infrastructure.Configuration.IdentityOptions;
 
 namespace IdentityService.Infrastructure.Seed;
 
@@ -11,7 +13,8 @@ public sealed class IdentityDevSeeder(
     IdentityServiceDbContext db,
     IPasswordHasher<User> passwordHasher,
     IOpenIddictApplicationManager applicationManager,
-    IOpenIddictScopeManager scopeManager)
+    IOpenIddictScopeManager scopeManager,
+    IOptions<PosIdentityOptions> options)
 {
     public const string WebClientId = "pos-web";
     public const string WebClientSecret = "dev-secret";
@@ -164,12 +167,15 @@ public sealed class IdentityDevSeeder(
             }, cancellationToken);
         }
 
-        if (await applicationManager.FindByClientIdAsync(WebClientId, cancellationToken) is null)
+        var clientId = options.Value.WebClientId ?? WebClientId;
+        var clientSecret = options.Value.WebClientSecret ?? WebClientSecret;
+
+        if (await applicationManager.FindByClientIdAsync(clientId, cancellationToken) is null)
         {
             var descriptor = new OpenIddictApplicationDescriptor
             {
-                ClientId = WebClientId,
-                ClientSecret = WebClientSecret,
+                ClientId = clientId,
+                ClientSecret = clientSecret,
                 DisplayName = "Restaurant POS Web",
                 Permissions =
                 {

@@ -42,10 +42,17 @@ public static class IdentityServiceModule
         var identityOptions = identity.Get<IdentityOptions>() ?? new IdentityOptions();
         services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddScoped<OpenIddictPasswordGrantHandler>();
+        services.AddScoped<UserSessionRevoker>();
         services.AddScoped<IdentityDevSeeder>();
         services.AddScoped<IUserBranchRepository, UserBranchRepository>();
         services.AddScoped<IAuthorityRepository, AuthorityRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        
+        services.AddHttpClient(OpenIddictTokenClient.HttpClientName, client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
+        services.AddScoped<OpenIddictTokenClient>();
 
         services.AddOpenIddict()
             .AddCore(options => options
@@ -61,7 +68,7 @@ public static class IdentityServiceModule
                 options.AllowClientCredentialsFlow();
                 
                 options.SetAccessTokenLifetime(TimeSpan.FromMinutes(identityOptions.AccessTokenExpiration));
-                options.SetRefreshTokenLifetime(TimeSpan.FromDays(14));
+                options.SetRefreshTokenLifetime(TimeSpan.FromMinutes(identityOptions.RefreshTokenExpiration));
                 
                 options.AddEphemeralSigningKey();
                 options.AddEphemeralEncryptionKey();

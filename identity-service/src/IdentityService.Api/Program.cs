@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddIdentityService(builder.Configuration);
 builder.Services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
 builder.Services.AddPosAuthorizationPolicies();
+builder.Services.AddPosAntiForgery();
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -19,6 +20,8 @@ var app = builder.Build();
 // Middlewares
 app.UsePosLocalization();
 app.UseGlobalExceptionHandler();
+app.UseCookieToBearer();
+app.UsePosCsrf();
 app.UseAuthentication();
 app.UseAuthorization();
 
