@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using OrdersService.Domain.Constants;
 using OrdersService.Domain.Entities;
+using OrdersService.Domain.Events;
 using OrdersService.Domain.Repositories;
+using RestaurantPos.Shared.Abstractions.Events;
+using RestaurantPos.Shared.Persistence.Outbox;
 using OrdersService.Infrastructure.Data;
 
 namespace OrdersService.Infrastructure.Repositories;
@@ -14,9 +17,11 @@ public sealed class OrderRepository(OrdersServiceDbContext db) : IOrderRepositor
             .Include(o => o.StatusHistory)
             .FirstOrDefaultAsync(o => o.Id == id && o.RestaurantId == restaurantId, ct);
 
-    public async Task CreateAsync(Order order, CancellationToken ct = default)
+    public async Task CreateAsync(Order order, DomainEvent? domainEvent = null, CancellationToken ct = default)
     {
         db.Orders.Add(order);
+        if (domainEvent is not null)
+            db.AddDomainEvent(domainEvent);
         await db.SaveChangesAsync(ct);
     }
 

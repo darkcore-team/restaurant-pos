@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using OrdersService.Domain.Constants;
 using OrdersService.Domain.Entities;
+using OrdersService.Domain.Events;
 using OrdersService.Domain.Repositories;
 using RestaurantPos.Shared.Abstractions.Common;
 
@@ -65,9 +66,19 @@ public sealed class OpenOrderUseCase(IOrderRepository orderRepository, IStringLo
             UpdatedBy = actorId
         });
 
+        var orderOpenedEvent = new OrderOpenedEvent
+        {
+            RestaurantId = restaurantId,
+            BranchId = branchId,
+            OrderId = order.Id,
+            OrderNumber = order.OrderNumber,
+            TableId = request.TableId,
+            OpenedBy = actorId
+        };
+
         try
         {
-            await orderRepository.CreateAsync(order, ct);
+            await orderRepository.CreateAsync(order, orderOpenedEvent, ct);
         }
         catch (DbUpdateException)
         {

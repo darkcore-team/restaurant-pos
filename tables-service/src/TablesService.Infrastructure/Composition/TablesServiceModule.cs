@@ -12,6 +12,8 @@ using TablesService.Domain.Repositories;
 using TablesService.Infrastructure.Data;
 using TablesService.Infrastructure.Repositories;
 using TablesService.Infrastructure.Seed;
+using TablesService.Infrastructure.Workers;
+using RestaurantPos.Shared.Infrastructure.Messaging;
 
 namespace TablesService.Infrastructure.Composition;
 
@@ -23,6 +25,7 @@ public static class TablesServiceModule
             ?? throw new InvalidOperationException("Connection string 'TablesDb' not found");
 
         services.AddTenantHttpContext();
+        services.AddTenantBackgroundContext();
         services.AddTenantDbContext<TablesServiceDbContext>(
             connectionString, "tables",
             npgsql =>
@@ -32,6 +35,7 @@ public static class TablesServiceModule
             },
             options => options.UseSnakeCaseNamingConvention());
 
+        services.AddPosMessaging(configuration);
         services.AddPosAuthentication(configuration);
         services.AddPosLocalization();
 
@@ -54,6 +58,8 @@ public static class TablesServiceModule
         services.AddScoped<ReleaseTableUseCase>();
 
         services.AddScoped<TablesDevSeeder>();
+
+        services.AddHostedService<OrderOpenedConsumer>();
 
         services.AddPosHealthChecks("tables-service");
         return services;
