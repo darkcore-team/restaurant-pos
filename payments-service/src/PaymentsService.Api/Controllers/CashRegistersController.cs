@@ -6,7 +6,7 @@ using RestaurantPos.Shared.Infrastructure.Authentication;
 namespace PaymentsService.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/cash-registers")]
 [Authorize(Policy = PosPolicies.TenantAccess)]
 [Authorize(Policy = PosPolicies.CashierOrAbove)]
 public class CashRegistersController(GetCashRegistersUseCase useCase) : ControllerBase
