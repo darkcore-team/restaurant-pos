@@ -6,16 +6,16 @@ namespace RestaurantPos.Shared.Infrastructure.Authentication;
 
 public static class PosAntiForgeryExtensions
 {
-    public const string HeaderName = "X-CSRF-TOKEN";
+    public const string HeaderName = PosAuthCookies.CsrfHeader;
 
     public static IServiceCollection AddPosAntiForgery(this IServiceCollection services)
     {
         services.AddAntiforgery(options =>
         {
             options.HeaderName = HeaderName;
-            options.Cookie.Name = "pos_csrf_token";
-            // The SPA has to read this cookie to echo it back in the header, so it cannot be HttpOnly
-            options.Cookie.HttpOnly = false;
+            options.Cookie.Name = PosAuthCookies.Csrf;
+            options.Cookie.Path = "/";
+            options.Cookie.HttpOnly = true;
             options.Cookie.SameSite = SameSiteMode.Strict;
         });
 
