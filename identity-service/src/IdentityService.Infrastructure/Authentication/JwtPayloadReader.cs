@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 
@@ -48,10 +49,16 @@ public static class JwtPayloadReader
 
     public static long ReadInt64(JsonElement root, string claim)
     {
-        if (root.TryGetProperty(claim, out var element) && element.TryGetInt64(out var value))
+        if (!root.TryGetProperty(claim, out var element))
+            return 0;
+
+        if (element.ValueKind == JsonValueKind.Number && element.TryGetInt64(out var value))
             return value;
 
-        return 0;
+        return element.ValueKind == JsonValueKind.String
+               && long.TryParse(element.GetString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed)
+            ? parsed
+            : 0;
     }
 
     public static string ReadString(JsonElement root, string claim)

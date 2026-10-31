@@ -41,7 +41,7 @@ public sealed class AuthController(
             ["password"] = request.Password,
             ["client_id"] = options.Value.WebClientId,
             ["client_secret"] = options.Value.WebClientSecret,
-            ["scope"] = "api"
+            ["scope"] = "api offline_access"
         }, cancellationToken);
 
         if (!result.Success || string.IsNullOrEmpty(result.AccessToken))
@@ -65,7 +65,6 @@ public sealed class AuthController(
             ["refresh_token"] = refreshToken,
             ["client_id"] = options.Value.WebClientId,
             ["client_secret"] = options.Value.WebClientSecret,
-            ["scope"] = "api"
         }, cancellationToken);
 
         if (!result.Success || string.IsNullOrEmpty(result.AccessToken))

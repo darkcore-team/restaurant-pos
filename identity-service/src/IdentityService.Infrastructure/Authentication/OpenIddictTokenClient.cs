@@ -48,17 +48,20 @@ public sealed class OpenIddictTokenClient(
         if (!TryReadPayload(payload, out var document))
             return new TokenResult(false, "invalid_response", "Respuesta invalida del token endpoint.", null, null, 0);
 
-        document.TryGetProperty("access_token", out var accessTokenElement);
-        document.TryGetProperty("refresh_token", out var refreshTokenElement);
-        document.TryGetProperty("expires_in", out var expiresInElement);
+        var accessToken = GetString(document, "access_token");
+        var refreshToken = GetString(document, "refresh_token");
+        var expiresIn = document.TryGetProperty("expires_in", out var expiresInElement)
+                        && expiresInElement.TryGetInt64(out var seconds) ? seconds : 0;
 
-        return new TokenResult(
-            true,
-            null,
-            null,
-            accessTokenElement.GetString(),
-            refreshTokenElement.GetString(),
-            expiresInElement.TryGetInt64(out var expiresIn) ? expiresIn : 0);
+        if (accessToken is null)
+            return new TokenResult(false, "invalid_response", "El token endpoint no devolvio access_token.", null, null,
+                0);
+        
+        if (refreshToken is null)
+            return new TokenResult(false, 
+                "invalid_response", "El token endpoint no devolvio refresh_token (falta el scope offline_access).", null, null, 0);
+
+        return new TokenResult(true, null, null, accessToken, refreshToken, expiresIn);
     }
 
     private static bool TryReadPayload(string payload, out JsonElement element)
@@ -79,4 +82,9 @@ public sealed class OpenIddictTokenClient(
             return false;
         }
     }
+
+    private static string? GetString(JsonElement element, string property) =>
+        element.TryGetProperty(property, out var value) && value.ValueKind == JsonValueKind.String
+            ? value.GetString()
+            : null;
 }

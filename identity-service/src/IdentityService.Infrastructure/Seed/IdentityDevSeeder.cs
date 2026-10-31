@@ -158,36 +158,40 @@ public sealed class IdentityDevSeeder(
 
     private async Task SeedOpenIddictAsync(CancellationToken cancellationToken)
     {
-        if (await scopeManager.FindByNameAsync(ApiScope, cancellationToken) is null)
+        if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.OfflineAccess, cancellationToken) is null)
         {
             await scopeManager.CreateAsync(new OpenIddictScopeDescriptor
             {
-                Name = ApiScope,
-                DisplayName = "Restaurant POS API"
+                Name = OpenIddictConstants.Scopes.OfflineAccess,
+                DisplayName = "Offline access"
             }, cancellationToken);
         }
 
         var clientId = options.Value.WebClientId ?? WebClientId;
         var clientSecret = options.Value.WebClientSecret ?? WebClientSecret;
-
-        if (await applicationManager.FindByClientIdAsync(clientId, cancellationToken) is null)
+        
+        var application = await applicationManager.FindByClientIdAsync(clientId, cancellationToken);
+        
+        var descriptor = new OpenIddictApplicationDescriptor
         {
-            var descriptor = new OpenIddictApplicationDescriptor
+            ClientId = clientId, 
+            ClientSecret = clientSecret, 
+            ClientType = OpenIddictConstants.ClientTypes.Confidential,
+            DisplayName = "Restaurant POS Web", 
+            Permissions = 
             {
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-                DisplayName = "Restaurant POS Web",
-                Permissions =
-                {
-                    OpenIddictConstants.Permissions.Endpoints.Token,
-                    OpenIddictConstants.Permissions.GrantTypes.Password,
-                    OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
-                    OpenIddictConstants.Permissions.GrantTypes.ClientCredentials,
-                    OpenIddictConstants.Permissions.Prefixes.Scope + ApiScope
-                }
-            };
-
+                OpenIddictConstants.Permissions.Endpoints.Token, 
+                OpenIddictConstants.Permissions.GrantTypes.Password, 
+                OpenIddictConstants.Permissions.GrantTypes.RefreshToken, 
+                OpenIddictConstants.Permissions.GrantTypes.ClientCredentials, 
+                OpenIddictConstants.Permissions.Prefixes.Scope + ApiScope, 
+                OpenIddictConstants.Permissions.Prefixes.Scope + OpenIddictConstants.Scopes.OfflineAccess
+            }
+        };
+        
+        if (application is null)
             await applicationManager.CreateAsync(descriptor, cancellationToken);
-        }
+        else
+            await applicationManager.UpdateAsync(application, descriptor, cancellationToken);
     }
 }
