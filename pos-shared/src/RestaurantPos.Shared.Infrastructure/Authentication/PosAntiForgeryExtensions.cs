@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,9 @@ public static class PosAntiForgeryExtensions
 
     public static IServiceCollection AddPosAntiForgery(this IServiceCollection services)
     {
+        services.AddDataProtection()
+            .SetApplicationName("RestaurantPos");
+
         services.AddAntiforgery(options =>
         {
             options.HeaderName = HeaderName;
