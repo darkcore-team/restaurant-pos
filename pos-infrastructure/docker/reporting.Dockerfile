@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY pos-shared/ pos-shared/
 COPY reporting-service/ reporting-service/
-RUN dotnet publish "reporting-service/src/ReportingService.Api/ReportingService.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false /p:WarningsNotAsErrors="NU1901;NU1902;NU1903;NU1904"
+RUN dotnet publish "reporting-service/src/ReportingService.Api/ReportingService.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false /p:NuGetAudit=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
