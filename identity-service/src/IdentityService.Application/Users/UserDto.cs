@@ -8,6 +8,9 @@ public record UserDto
     public string FirsName { get; init; } = null!;
     public string LastName { get; init; } = null!;
     public string Status { get; init; } = null!;
+    public bool IsLockedOut { get; init; }
+    public short FailedCount { get; init; }
+    public DateTimeOffset? LastLoginAt { get; init; }
     public List<string> Roles { get; init; } = [];
     public List<BranchRefDto> Branches { get; init; } = [];
 }

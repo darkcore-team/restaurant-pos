@@ -20,6 +20,9 @@ public static class GetUserUseCase
                 FirsName = u.Person.FirstName,
                 LastName = u.Person.LastName,
                 Status = u.Status.ToString(),
+                IsLockedOut = u.LockoutEnd.HasValue && u.LockoutEnd.Value > DateTimeOffset.UtcNow,
+                FailedCount = u.FailedCount,
+                LastLoginAt = u.LastLoginAt,
                 Roles = u.UserAuthorities
                     .Select(ua => ua.Authority.Code)
                     .Order()

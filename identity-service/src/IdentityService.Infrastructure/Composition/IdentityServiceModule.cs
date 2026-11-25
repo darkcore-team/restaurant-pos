@@ -47,6 +47,9 @@ public static class IdentityServiceModule
         services.AddScoped<IUserBranchRepository, UserBranchRepository>();
         services.AddScoped<IAuthorityRepository, AuthorityRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IBranchRepository, BranchRepository>();
+        services.AddScoped<IRestaurantRepository, RestaurantRepository>();
+        services.AddScoped<ILoginAttemptRepository, LoginAttemptRepository>();
         
         services.AddHttpClient(OpenIddictTokenClient.HttpClientName, client =>
         {
