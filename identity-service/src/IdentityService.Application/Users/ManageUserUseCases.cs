@@ -134,3 +134,33 @@ public sealed class UnlockUserUseCase(IUserRepository userRepository)
         return Answer.Ok(message: "Usuario desbloqueado.");
     }
 }
+
+public sealed class ChangeOwnPasswordRequest
+{
+    [Required] public string CurrentPassword { get; set; } = null!;
+    [Required, MinLength(6), MaxLength(128)] public string NewPassword { get; set; } = null!;
+}
+
+public sealed class ChangeOwnPasswordUseCase(IUserRepository userRepository, IPasswordHasher<User> passwordHasher)
+{
+    public async Task<Answer> ExecuteAsync(long userId, ChangeOwnPasswordRequest request, CancellationToken ct = default)
+    {
+        var user = await userRepository.GetTrackedByIdAsync(userId, ct);
+        if (user is null)
+            return Answer.Fail("USER_NOT_FOUND", "Usuario no encontrado.");
+
+        var verification = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.CurrentPassword);
+        if (verification == PasswordVerificationResult.Failed)
+            return Answer.Fail("INVALID_CURRENT_PASSWORD", "La contraseña actual es incorrecta.");
+
+        var now = DateTimeOffset.UtcNow;
+        user.PasswordHash = passwordHasher.HashPassword(user, request.NewPassword);
+        user.PasswordUpdatedAt = now;
+        user.MustChangePassword = false;
+        user.UpdatedAt = now;
+        user.UpdatedBy = userId;
+
+        await userRepository.UpdateAsync(user, ct);
+        return Answer.Ok(message: "Contraseña actualizada correctamente.");
+    }
+}

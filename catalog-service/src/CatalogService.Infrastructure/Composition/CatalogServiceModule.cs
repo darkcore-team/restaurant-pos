@@ -61,6 +61,9 @@ public static class CatalogServiceModule
         services.AddScoped<GetCurrenciesUseCase>();
         services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
         services.AddScoped<GetPaymentMethodsUseCase>();
+        services.AddScoped<CreatePaymentMethodUseCase>();
+        services.AddScoped<UpdatePaymentMethodUseCase>();
+        services.AddScoped<DeletePaymentMethodUseCase>();
 
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -83,6 +86,9 @@ public static class CatalogServiceModule
         services.AddScoped<DeleteModifierGroupUseCase>();
 
         services.AddScoped<GetTaxesUseCase>();
+        services.AddScoped<CreateTaxUseCase>();
+        services.AddScoped<UpdateTaxUseCase>();
+        services.AddScoped<DeleteTaxUseCase>();
         
         services.AddPosHealthChecks("catalog-service");
 

@@ -17,6 +17,7 @@ builder.Services.AddIdentityService(builder.Configuration);
 builder.Services.AddScoped<UpdateUserUseCase>();
 builder.Services.AddScoped<ResetUserPasswordUseCase>();
 builder.Services.AddScoped<UnlockUserUseCase>();
+builder.Services.AddScoped<ChangeOwnPasswordUseCase>();
 builder.Services.AddScoped<GetRestaurantBranchesUseCase>();
 builder.Services.AddScoped<CreateBranchUseCase>();
 builder.Services.AddScoped<UpdateBranchUseCase>();

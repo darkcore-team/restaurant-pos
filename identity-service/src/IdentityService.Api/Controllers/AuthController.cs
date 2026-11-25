@@ -1,4 +1,5 @@
 using IdentityService.Application.Auth;
+using IdentityService.Application.Users;
 using IdentityService.Infrastructure.Authentication;
 using IdentityService.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Antiforgery;
@@ -16,6 +17,7 @@ namespace IdentityService.Api.Controllers;
 public sealed class AuthController(
     OpenIddictTokenClient tokenClient,
     UserSessionRevoker sessionRevoker,
+    ChangeOwnPasswordUseCase changeOwnPasswordUseCase,
     IAntiforgery antiforgery,
     IOptions<IdentityOptions> options) : ControllerBase
 {
@@ -111,6 +113,18 @@ public sealed class AuthController(
             User.FindAll(OpenIddictConstants.Claims.Role).Select(claim => claim.Value).ToArray());
 
         return Ok(Answer<SessionDto>.Ok(session));
+    }
+
+    [HttpPost("change-password")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangeOwnPasswordRequest request, CancellationToken ct)
+    {
+        var subject = User.FindFirst(OpenIddictConstants.Claims.Subject)?.Value;
+        if (subject is null || !long.TryParse(subject, out var userId))
+            return Unauthorized(Answer.Fail("INVALID_SESSION", "Sesion invalida."));
+
+        var answer = await changeOwnPasswordUseCase.ExecuteAsync(userId, request, ct);
+        return answer.Success ? Ok(answer) : BadRequest(answer);
     }
 
     private void SetAuthCookies(OpenIddictTokenClient.TokenResult result)

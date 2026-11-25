@@ -10,6 +10,7 @@ public interface IUserRepository
     Task<long> CreateAsync(User user, CancellationToken ct);
     Task<IReadOnlyList<User>> GetTenantUsersAsync(long restaurantId, CancellationToken ct);
     Task<User?> GetByIdAsync(long id, CancellationToken ct);
+    Task<User?> GetTrackedByIdAsync(long id, CancellationToken ct);
     Task<User?> GetTrackedForTenantAsync(long id, long restaurantId, CancellationToken ct);
     Task UpdateAsync(User user, CancellationToken ct);
 }
