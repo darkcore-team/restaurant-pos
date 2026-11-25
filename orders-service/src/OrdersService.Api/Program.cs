@@ -20,8 +20,8 @@ var app = builder.Build();
 app.UseGlobalExceptionHandler();
 app.UsePosLocalization();
 app.UseCookieToBearer();
-app.UsePosCsrf();
 app.UseAuthentication();
+app.UsePosCsrf();
 app.UseAuthorization();
 
 app.MapHealthChecks("/health/live", new HealthCheckOptions() { Predicate = check => check.Tags.Contains("live") });

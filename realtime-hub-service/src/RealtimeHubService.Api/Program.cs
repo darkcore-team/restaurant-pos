@@ -17,8 +17,8 @@ builder.Services.AddPosHealthChecks("realtime-hub-service");
 var app = builder.Build();
 
 app.UseCookieToBearer();
-app.UsePosCsrf();
 app.UseAuthentication();
+app.UsePosCsrf();
 app.UseAuthorization();
 
 app.MapHub<KdsHub>("/hubs/kds");
