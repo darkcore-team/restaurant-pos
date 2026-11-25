@@ -7,6 +7,7 @@ public sealed record OrderClosedEvent : DomainEvent
     public override string EventType => "orders.order_closed";
     public long OrderId { get; init; }
     public string OrderNumber { get; init; } = null!;
+    public long? TableId { get; init; }
     public long? OpenedBy { get; init; }
     public decimal Total { get; init; }
     public decimal DiscountAmount { get; init; }

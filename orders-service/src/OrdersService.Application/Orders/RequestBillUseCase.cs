@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrdersService.Domain.Constants;
+using OrdersService.Domain.Events;
 using OrdersService.Domain.Repositories;
 using RestaurantPos.Shared.Abstractions.Common;
 
@@ -37,7 +38,14 @@ public sealed class RequestBillUseCase(IOrderRepository orderRepository, IString
             UpdatedBy = actorId
         });
 
-        await orderRepository.UpdateAsync(order, ct);
+        await orderRepository.UpdateAsync(order, [new OrderBillRequestedEvent
+        {
+            RestaurantId = order.RestaurantId,
+            BranchId = order.BranchId,
+            OrderId = order.Id,
+            OrderNumber = order.OrderNumber,
+            TableId = order.TableId
+        }], ct);
         return Answer.Ok(message: localizer["BillRequested"]);
     }
 }

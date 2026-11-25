@@ -31,6 +31,14 @@ public sealed class OrderRepository(OrdersServiceDbContext db) : IOrderRepositor
         await db.SaveChangesAsync(ct);
     }
 
+    public async Task UpdateAsync(Order order, IEnumerable<DomainEvent> domainEvents, CancellationToken ct = default)
+    {
+        db.Orders.Update(order);
+        foreach (var domainEvent in domainEvents)
+            db.AddDomainEvent(domainEvent);
+        await db.SaveChangesAsync(ct);
+    }
+
     public async Task<bool> HasOpenOrderForTableAsync(long tableId, long restaurantId, CancellationToken ct = default)
         => await db.Orders.AnyAsync(o => o.TableId == tableId && o.RestaurantId == restaurantId
             && (o.Status == OrderStatus.Open || o.Status == OrderStatus.InPreparation

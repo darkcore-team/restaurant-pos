@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Localization;
 using OrdersService.Domain.Constants;
+using OrdersService.Domain.Events;
 using OrdersService.Domain.Repositories;
 using RestaurantPos.Shared.Abstractions.Common;
+using RestaurantPos.Shared.Abstractions.Events;
 
 namespace OrdersService.Application.Orders;
 
@@ -46,7 +48,42 @@ public sealed class SendToKitchenUseCase(IOrderRepository orderRepository, IStri
             UpdatedBy = actorId
         });
 
-        await orderRepository.UpdateAsync(order, ct);
+        var stations = activeItems
+            .Select(i => i.StationCode)
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var events = new List<DomainEvent>();
+        if (stations.Count == 0)
+        {
+            events.Add(new OrderSentToKitchenEvent
+            {
+                RestaurantId = order.RestaurantId,
+                BranchId = order.BranchId,
+                OrderId = order.Id,
+                OrderNumber = order.OrderNumber,
+                TableId = order.TableId,
+                StationCode = null
+            });
+        }
+        else
+        {
+            foreach (var stationCode in stations)
+            {
+                events.Add(new OrderSentToKitchenEvent
+                {
+                    RestaurantId = order.RestaurantId,
+                    BranchId = order.BranchId,
+                    OrderId = order.Id,
+                    OrderNumber = order.OrderNumber,
+                    TableId = order.TableId,
+                    StationCode = stationCode
+                });
+            }
+        }
+
+        await orderRepository.UpdateAsync(order, events, ct);
         return Answer.Ok(message: localizer["SentToKitchen"]);
     }
 }
