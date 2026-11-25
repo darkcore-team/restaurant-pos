@@ -18,6 +18,10 @@ var catalogService = builder.AddProject<Projects.CatalogService_Api>("catalog-se
 // 3. Tables Service (8083)
 var tablesService = builder.AddProject<Projects.TablesService_Api>("tables-service")
     .WithEnvironment("ConnectionStrings__TablesDb", dbConn)
+    .WithEnvironment("RabbitMq__HostName", rmqHost)
+    .WithEnvironment("RabbitMq__Port", rmqPort)
+    .WithEnvironment("RabbitMq__Username", rmqUser)
+    .WithEnvironment("RabbitMq__Password", rmqPass)
     .WaitFor(identityService);
 
 // 4. Orders Service (8084)
@@ -49,10 +53,10 @@ var reportingService = builder.AddProject<Projects.ReportingService_Api>("report
 
 // 7. Realtime Hub Service (8087)
 var realtimeHubService = builder.AddProject<Projects.RealtimeHubService_Api>("realtime-hub-service")
-    .WithEnvironment("RabbitMQ__Host", rmqHost)
-    .WithEnvironment("RabbitMQ__Port", rmqPort)
-    .WithEnvironment("RabbitMQ__Username", rmqUser)
-    .WithEnvironment("RabbitMQ__Password", rmqPass)
+    .WithEnvironment("RabbitMq__HostName", rmqHost)
+    .WithEnvironment("RabbitMq__Port", rmqPort)
+    .WithEnvironment("RabbitMq__Username", rmqUser)
+    .WithEnvironment("RabbitMq__Password", rmqPass)
     .WaitFor(ordersService);
 
 builder.Build().Run();
