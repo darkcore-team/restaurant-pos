@@ -71,21 +71,33 @@ public sealed class RabbitMqConnectionProvider(
         }
     }
 
-    private ConnectionFactory BuildFactory() => new()
+    private ConnectionFactory BuildFactory()
     {
-        HostName = _options.HostName,
-        Port = _options.Port,
-        UserName = _options.Username,
-        Password = _options.Password,
-        VirtualHost = _options.VirtualHost,
+        var factory = new ConnectionFactory
+        {
+            // The client rebuilds its own channels and re-declares topology after a drop.
+            // Without this, every blip needs manual and reconnect code.
+            AutomaticRecoveryEnabled = true,
+            TopologyRecoveryEnabled = true,
+            RequestedHeartbeat = TimeSpan.FromSeconds(30),
+            NetworkRecoveryInterval = TimeSpan.FromSeconds(_options.NetworkRecoveryIntervalSeconds)
+        };
 
-        // The client rebuilds its own channels and re-declares topology after a drop.
-        // Without this, every blip needs manual and reconnect code.
-        AutomaticRecoveryEnabled = true,
-        TopologyRecoveryEnabled = true,
-        RequestedHeartbeat = TimeSpan.FromSeconds(30),
-        NetworkRecoveryInterval = TimeSpan.FromSeconds(_options.NetworkRecoveryIntervalSeconds)
-    };
+        if (!string.IsNullOrWhiteSpace(_options.Uri))
+        {
+            factory.Uri = new Uri(_options.Uri);
+        }
+        else
+        {
+            factory.HostName = _options.HostName;
+            factory.Port = _options.Port;
+            factory.UserName = _options.Username;
+            factory.Password = _options.Password;
+            factory.VirtualHost = _options.VirtualHost;
+        }
+
+        return factory;
+    }
 
     private async Task SafeDisposeAsync(IConnection connection)
     {
