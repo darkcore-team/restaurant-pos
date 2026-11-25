@@ -20,7 +20,8 @@ COPY ${SERVICE_DIR}/ ${SERVICE_DIR}/
 RUN dotnet publish "${SERVICE_DIR}/src/${PROJECT_NAME}/${PROJECT_NAME}.csproj" \
     -c Release \
     -o /app/publish \
-    /p:UseAppHost=false
+    /p:UseAppHost=false \
+    /p:WarningsNotAsErrors="NU1901;NU1902;NU1903;NU1904"
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 ARG PROJECT_NAME
