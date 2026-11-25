@@ -17,6 +17,7 @@ public class OrdersController(
     SendToKitchenUseCase sendUseCase,
     UpdateItemStatusUseCase updateItemStatusUseCase,
     GetActiveOrdersUseCase activeOrdersUseCase,
+    GetOrderHistoryUseCase historyOrdersUseCase,
     RequestBillUseCase requestBillUseCase,
     CancelOrderUseCase cancelUseCase) : ControllerBase
 {
@@ -108,6 +109,18 @@ public class OrdersController(
 
         // tenant context is validated above; pass through to use case via implicit context
         var answer = await activeOrdersUseCase.ExecuteAsync(ct);
+        return answer.Success ? Ok(answer) : BadRequest(answer);
+    }
+
+    [HttpGet("history")]
+    [Authorize(Policy = "OrderRead")]
+    public async Task<IActionResult> GetHistory(
+        [FromQuery] string? status = null, [FromQuery] int limit = 50, CancellationToken ct = default)
+    {
+        var restaurantId = User.RequireRestaurantId();
+        var branchId = User.RequireBranchId();
+
+        var answer = await historyOrdersUseCase.ExecuteAsync(restaurantId, branchId, status, limit, ct);
         return answer.Success ? Ok(answer) : BadRequest(answer);
     }
 

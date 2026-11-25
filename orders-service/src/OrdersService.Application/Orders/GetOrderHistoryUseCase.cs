@@ -1,0 +1,75 @@
+using OrdersService.Domain.Repositories;
+using RestaurantPos.Shared.Abstractions.Common;
+
+namespace OrdersService.Application.Orders;
+
+public sealed class GetOrderHistoryUseCase(IOrderRepository orderRepository)
+{
+    public async Task<Answer<IReadOnlyList<OrderDto>>> ExecuteAsync(
+        long restaurantId, long branchId, string? status = null, int limit = 50, CancellationToken ct = default)
+    {
+        var orders = await orderRepository.GetHistoryOrdersAsync(restaurantId, branchId, status, limit, ct);
+
+        var dtos = orders.Select(o => new OrderDto(
+            o.Id,
+            o.PublicId,
+            o.OrderNumber,
+            o.OrderType.ToString(),
+            o.Status.ToString(),
+            o.TableId,
+            o.BranchId,
+            o.CurrencyId,
+            o.ExchangeRate,
+            o.CustomerName,
+            o.CustomerPhone,
+            o.Covers,
+            o.Subtotal,
+            o.DiscountAmount,
+            o.TaxAmount,
+            o.Total,
+            o.TipAmount,
+            o.PaidAmount,
+            o.BalanceDue,
+            o.OpenedBy,
+            o.OpenedAt,
+            o.ClosedBy,
+            o.ClosedAt,
+            o.Notes,
+            o.Items.OrderBy(i => i.Id).Select(i => new OrderItemDto(
+                i.Id,
+                i.PublicId,
+                i.ItemId,
+                i.StationId,
+                i.StationCode,
+                i.Status.ToString(),
+                i.Name,
+                i.Description,
+                i.UnitPrice,
+                i.Quantity,
+                i.ModifiersTotal,
+                i.DiscountAmount,
+                i.DiscountReason,
+                i.TaxId,
+                i.TaxRate,
+                i.TaxAmount,
+                i.IsTaxExempt,
+                i.TaxInclusive,
+                i.LineTotal,
+                i.Notes,
+                i.VoidedBy,
+                i.VoidedAt,
+                i.VoidReason,
+                i.Modifiers.Select(m => new OrderItemModifierDto(
+                    m.Id,
+                    m.PublicId,
+                    m.ModifierOptionId,
+                    m.ModifierGroupId,
+                    m.Name,
+                    m.PriceDelta,
+                    m.Notes)).ToList()
+            )).ToList()
+        )).ToList();
+
+        return Answer<IReadOnlyList<OrderDto>>.Ok(dtos);
+    }
+}

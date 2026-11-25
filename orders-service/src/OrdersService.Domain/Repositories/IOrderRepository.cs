@@ -13,4 +13,5 @@ public interface IOrderRepository
     Task<int> CountByBranchAsync(long branchId, CancellationToken ct = default);
     Task<IReadOnlyList<OrderItem>> GetActiveKdsItemsAsync(string stationCode, long restaurantId, long branchId, CancellationToken ct = default);
     Task<IReadOnlyList<Order>> GetActiveOrdersAsync(long restaurantId, long branchId, CancellationToken ct = default);
+    Task<IReadOnlyList<Order>> GetHistoryOrdersAsync(long restaurantId, long branchId, string? status, int limit, CancellationToken ct = default);
 }

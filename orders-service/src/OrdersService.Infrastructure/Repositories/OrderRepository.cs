@@ -74,4 +74,26 @@ public sealed class OrderRepository(OrdersServiceDbContext db) : IOrderRepositor
                     || o.Status == OrderStatus.Billing))
             .OrderByDescending(o => o.OpenedAt)
             .ToListAsync(ct);
+
+    public async Task<IReadOnlyList<Order>> GetHistoryOrdersAsync(
+        long restaurantId, long branchId, string? status, int limit, CancellationToken ct = default)
+    {
+        var safeLimit = Math.Clamp(limit, 1, 200);
+        var query = db.Orders
+            .AsNoTracking()
+            .Include(o => o.Items).ThenInclude(i => i.Modifiers)
+            .Where(o => o.RestaurantId == restaurantId && o.BranchId == branchId);
+
+        if (string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase))
+            query = query.Where(o => o.Status == OrderStatus.Closed);
+        else if (string.Equals(status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+            query = query.Where(o => o.Status == OrderStatus.Cancelled);
+        else
+            query = query.Where(o => o.Status == OrderStatus.Closed || o.Status == OrderStatus.Cancelled);
+
+        return await query
+            .OrderByDescending(o => o.ClosedAt ?? o.OpenedAt)
+            .Take(safeLimit)
+            .ToListAsync(ct);
+    }
 }

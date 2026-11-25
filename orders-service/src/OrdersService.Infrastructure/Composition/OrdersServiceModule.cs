@@ -61,6 +61,7 @@ public static class OrdersServiceModule
         services.AddScoped<UpdateItemStatusUseCase>();
         services.AddScoped<GetKdsUseCase>();
         services.AddScoped<GetActiveOrdersUseCase>();
+        services.AddScoped<GetOrderHistoryUseCase>();
         services.AddScoped<RequestBillUseCase>();
         services.AddScoped<CancelOrderUseCase>();
 

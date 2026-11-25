@@ -12,8 +12,18 @@ namespace PaymentsService.Api.Controllers;
 public class CashSessionsController(
     OpenCashSessionUseCase openUseCase,
     CloseCashSessionUseCase closeUseCase,
-    GetActiveCashSessionUseCase activeUseCase) : ControllerBase
+    GetActiveCashSessionUseCase activeUseCase,
+    GetCashSessionsHistoryUseCase historyUseCase) : ControllerBase
 {
+    [HttpGet]
+    public async Task<IActionResult> GetHistory([FromQuery] int limit = 50, CancellationToken ct = default)
+    {
+        var restaurantId = User.RequireRestaurantId();
+        var branchId = User.RequireBranchId();
+
+        var answer = await historyUseCase.ExecuteAsync(restaurantId, branchId, limit, ct);
+        return answer.Success ? Ok(answer) : BadRequest(answer);
+    }
     [HttpPost]
     public async Task<IActionResult> Open([FromBody] OpenCashSessionRequest request, CancellationToken ct)
     {
