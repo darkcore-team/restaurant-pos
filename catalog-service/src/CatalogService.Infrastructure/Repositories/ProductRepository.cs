@@ -8,6 +8,15 @@ namespace CatalogService.Infrastructure.Repositories;
 
 public sealed class ProductRepository(CatalogServiceDbContext db) : IProductRepository
 {
+    public async Task<IReadOnlyList<Product>> GetByBranchAsync(long restaurantId, long branchId, CancellationToken ct = default)
+        => await db.Products
+            .AsNoTracking()
+            .Include(p => p.OptionGroups)
+            .Where(p => p.RestaurantId == restaurantId && p.BranchId == branchId && p.Status == RecordStatus.Active)
+            .OrderBy(p => p.Position)
+            .ThenBy(p => p.Name)
+            .ToListAsync(ct);
+
     public async Task<Product?> GetByIdAsync(long id, long restaurantId, CancellationToken ct = default)
         => await db.Products
             .Include(p => p.OptionGroups)

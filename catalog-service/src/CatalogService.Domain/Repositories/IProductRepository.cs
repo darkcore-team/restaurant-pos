@@ -4,6 +4,7 @@ namespace CatalogService.Domain.Repositories;
 
 public interface IProductRepository
 {
+    Task<IReadOnlyList<Product>> GetByBranchAsync(long restaurantId, long branchId, CancellationToken ct = default);
     Task<Product?> GetByIdAsync(long id, long restaurantId, CancellationToken ct = default);
     Task CreateAsync(Product product, CancellationToken ct = default);
     Task UpdateAsync(Product product, CancellationToken ct = default);
