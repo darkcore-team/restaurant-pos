@@ -7,6 +7,7 @@ using RestaurantPos.Shared.Persistence;
 using RestaurantPos.Shared.Infrastructure.Localization;
 using TablesService.Application.Floor;
 using TablesService.Application.Tables;
+using TablesService.Application.Zones;
 using TablesService.Domain.Constants;
 using TablesService.Domain.Repositories;
 using TablesService.Infrastructure.Data;
@@ -52,7 +53,13 @@ public static class TablesServiceModule
         services.AddScoped<IZoneRepository, ZoneRepository>();
 
         services.AddScoped<GetFloorUseCase>();
+        services.AddScoped<GetZonesUseCase>();
+        services.AddScoped<CreateZoneUseCase>();
+        services.AddScoped<UpdateZoneUseCase>();
+        services.AddScoped<DeleteZoneUseCase>();
         services.AddScoped<CreateTableUseCase>();
+        services.AddScoped<UpdateTableUseCase>();
+        services.AddScoped<DeleteTableUseCase>();
         services.AddScoped<UpdateTableStatusUseCase>();
         services.AddScoped<AssignTableUseCase>();
         services.AddScoped<ReleaseTableUseCase>();

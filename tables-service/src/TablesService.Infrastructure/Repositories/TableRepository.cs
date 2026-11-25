@@ -15,7 +15,10 @@ public sealed class TableRepository(TablesServiceDbContext db) : ITableRepositor
             .FirstOrDefaultAsync(t => t.Id == id && t.RestaurantId == restaurantId && t.IsActive, ct);
 
     public async Task<bool> CodeExistsAsync(string code, long branchId, CancellationToken ct = default)
-        => await db.DiningTables.AnyAsync(t => t.Code == code && t.BranchId == branchId, ct);
+        => await db.DiningTables.AnyAsync(t => t.Code == code && t.BranchId == branchId && t.IsActive, ct);
+
+    public async Task<bool> CodeExistsAsync(string code, long branchId, long excludeId, CancellationToken ct = default)
+        => await db.DiningTables.AnyAsync(t => t.Code == code && t.BranchId == branchId && t.Id != excludeId && t.IsActive, ct);
 
     public async Task CreateAsync(DiningTable table, CancellationToken ct = default)
     {
