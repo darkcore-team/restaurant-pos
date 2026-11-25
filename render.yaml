@@ -1,13 +1,9 @@
 # Render Blueprint — 7 RestaurantPOS .NET 10 Microservices (Free Tier)
-# Connect darkcore-team/restaurant-pos in Render -> New -> Blueprint
-# Set the shared secrets in the "restaurant-pos-secrets" Environment Group in Render.
 
 envVarGroups:
   - name: restaurant-pos-secrets
     envVars:
-      - key: NEON_POOLED_CONNECTION_STRING
-        sync: false
-      - key: RABBITMQ_URI
+      - key: RabbitMq__Uri
         sync: false
       - key: DATA_PROTECTION_KEY
         generateValue: true
@@ -17,16 +13,13 @@ services:
     name: pos-identity
     runtime: docker
     plan: free
-    dockerfilePath: ./pos-infrastructure/docker/Service.Dockerfile
+    dockerfilePath: ./pos-infrastructure/docker/identity.Dockerfile
     dockerContext: .
     healthCheckPath: /health/live
-    dockerBuildArgs:
-      SERVICE_DIR: identity-service
-      PROJECT_NAME: IdentityService.Api
     envVars:
       - fromGroup: restaurant-pos-secrets
       - key: ConnectionStrings__IdentityDb
-        fromEnvVar: NEON_POOLED_CONNECTION_STRING
+        sync: false
       - key: Identity__Issuer
         value: https://pos-identity.onrender.com
       - key: Identity__CookieSecure
@@ -38,16 +31,13 @@ services:
     name: pos-catalog
     runtime: docker
     plan: free
-    dockerfilePath: ./pos-infrastructure/docker/Service.Dockerfile
+    dockerfilePath: ./pos-infrastructure/docker/catalog.Dockerfile
     dockerContext: .
     healthCheckPath: /health/live
-    dockerBuildArgs:
-      SERVICE_DIR: catalog-service
-      PROJECT_NAME: CatalogService.Api
     envVars:
       - fromGroup: restaurant-pos-secrets
       - key: ConnectionStrings__CatalogDb
-        fromEnvVar: NEON_POOLED_CONNECTION_STRING
+        sync: false
       - key: Jwt__Authority
         value: https://pos-identity.onrender.com
       - key: Jwt__Audience
@@ -59,18 +49,13 @@ services:
     name: pos-tables
     runtime: docker
     plan: free
-    dockerfilePath: ./pos-infrastructure/docker/Service.Dockerfile
+    dockerfilePath: ./pos-infrastructure/docker/tables.Dockerfile
     dockerContext: .
     healthCheckPath: /health/live
-    dockerBuildArgs:
-      SERVICE_DIR: tables-service
-      PROJECT_NAME: TablesService.Api
     envVars:
       - fromGroup: restaurant-pos-secrets
       - key: ConnectionStrings__TablesDb
-        fromEnvVar: NEON_POOLED_CONNECTION_STRING
-      - key: RabbitMq__Uri
-        fromEnvVar: RABBITMQ_URI
+        sync: false
       - key: Jwt__Authority
         value: https://pos-identity.onrender.com
       - key: Jwt__Audience
@@ -82,18 +67,13 @@ services:
     name: pos-orders
     runtime: docker
     plan: free
-    dockerfilePath: ./pos-infrastructure/docker/Service.Dockerfile
+    dockerfilePath: ./pos-infrastructure/docker/orders.Dockerfile
     dockerContext: .
     healthCheckPath: /health/live
-    dockerBuildArgs:
-      SERVICE_DIR: orders-service
-      PROJECT_NAME: OrdersService.Api
     envVars:
       - fromGroup: restaurant-pos-secrets
       - key: ConnectionStrings__OrdersDb
-        fromEnvVar: NEON_POOLED_CONNECTION_STRING
-      - key: RabbitMq__Uri
-        fromEnvVar: RABBITMQ_URI
+        sync: false
       - key: Jwt__Authority
         value: https://pos-identity.onrender.com
       - key: Jwt__Audience
@@ -105,18 +85,13 @@ services:
     name: pos-payments
     runtime: docker
     plan: free
-    dockerfilePath: ./pos-infrastructure/docker/Service.Dockerfile
+    dockerfilePath: ./pos-infrastructure/docker/payments.Dockerfile
     dockerContext: .
     healthCheckPath: /health/live
-    dockerBuildArgs:
-      SERVICE_DIR: payments-service
-      PROJECT_NAME: PaymentsService.Api
     envVars:
       - fromGroup: restaurant-pos-secrets
       - key: ConnectionStrings__PaymentsDb
-        fromEnvVar: NEON_POOLED_CONNECTION_STRING
-      - key: RabbitMq__Uri
-        fromEnvVar: RABBITMQ_URI
+        sync: false
       - key: Jwt__Authority
         value: https://pos-identity.onrender.com
       - key: Jwt__Audience
@@ -128,18 +103,13 @@ services:
     name: pos-reporting
     runtime: docker
     plan: free
-    dockerfilePath: ./pos-infrastructure/docker/Service.Dockerfile
+    dockerfilePath: ./pos-infrastructure/docker/reporting.Dockerfile
     dockerContext: .
     healthCheckPath: /health/live
-    dockerBuildArgs:
-      SERVICE_DIR: reporting-service
-      PROJECT_NAME: ReportingService.Api
     envVars:
       - fromGroup: restaurant-pos-secrets
       - key: ConnectionStrings__ReportingDb
-        fromEnvVar: NEON_POOLED_CONNECTION_STRING
-      - key: RabbitMq__Uri
-        fromEnvVar: RABBITMQ_URI
+        sync: false
       - key: Jwt__Authority
         value: https://pos-identity.onrender.com
       - key: Jwt__Audience
@@ -151,16 +121,11 @@ services:
     name: pos-realtime
     runtime: docker
     plan: free
-    dockerfilePath: ./pos-infrastructure/docker/Service.Dockerfile
+    dockerfilePath: ./pos-infrastructure/docker/realtime.Dockerfile
     dockerContext: .
     healthCheckPath: /health/live
-    dockerBuildArgs:
-      SERVICE_DIR: realtime-hub-service
-      PROJECT_NAME: RealtimeHubService.Api
     envVars:
       - fromGroup: restaurant-pos-secrets
-      - key: RabbitMq__Uri
-        fromEnvVar: RABBITMQ_URI
       - key: Jwt__Authority
         value: https://pos-identity.onrender.com
       - key: Jwt__Audience
