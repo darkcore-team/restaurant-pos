@@ -2,18 +2,22 @@ using CatalogService.Infrastructure.Composition;
 using CatalogService.Infrastructure.Seed;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using CatalogService.Api.Middleware;
+using RestaurantPos.Shared.Infrastructure.Authentication;
 using RestaurantPos.Shared.Infrastructure.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCatalogService(builder.Configuration);
+builder.Services.AddPosAntiForgery();
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
 app.UsePosLocalization();
 app.UseGlobalExceptionHandler();
+app.UseCookieToBearer();
 app.UseAuthentication();
+app.UsePosCsrf();
 app.UseAuthorization();
 
 app.MapHealthChecks("/health/live", new HealthCheckOptions() { Predicate = check => check.Tags.Contains("live") });

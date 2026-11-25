@@ -13,6 +13,8 @@ namespace TablesService.Api.Controllers;
 [Authorize(Policy = PosPolicies.WaiterOrAbove)]
 public class TablesController(
     CreateTableUseCase createUseCase,
+    UpdateTableUseCase updateUseCase,
+    DeleteTableUseCase deleteUseCase,
     UpdateTableStatusUseCase updateStatusUseCase,
     AssignTableUseCase assignUseCase,
     ReleaseTableUseCase releaseUseCase) : ControllerBase
@@ -27,6 +29,33 @@ public class TablesController(
 
         var answer = await createUseCase.ExecuteAsync(restaurantId, branchId, actorId, request, ct);
         return answer.Success ? StatusCode(201, answer) : BadRequest(answer);
+    }
+
+    [HttpPut("{id:long}")]
+    [Authorize(Policy = PosPolicies.ManagerOrAbove)]
+    public async Task<IActionResult> Update(long id, [FromBody] UpdateTableRequest request, CancellationToken ct)
+    {
+        var restaurantId = User.RequireRestaurantId();
+        var branchId = User.RequireBranchId();
+        var actorId = User.RequireUserId();
+
+        var answer = await updateUseCase.ExecuteAsync(id, restaurantId, branchId, actorId, request, ct);
+        if (answer.Success) return Ok(answer);
+        if (answer.Code == "TABLE_NOT_FOUND") return NotFound(answer);
+        if (answer.Code == "DUPLICATE_CODE") return Conflict(answer);
+        return BadRequest(answer);
+    }
+
+    [HttpDelete("{id:long}")]
+    [Authorize(Policy = PosPolicies.ManagerOrAbove)]
+    public async Task<IActionResult> Delete(long id, CancellationToken ct)
+    {
+        var restaurantId = User.RequireRestaurantId();
+        var actorId = User.RequireUserId();
+
+        var answer = await deleteUseCase.ExecuteAsync(id, restaurantId, actorId, ct);
+        if (answer.Success) return Ok(answer);
+        return answer.Code == "TABLE_NOT_FOUND" ? NotFound(answer) : BadRequest(answer);
     }
 
     [HttpPatch("{id:long}/status")]

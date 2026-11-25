@@ -20,4 +20,19 @@ public sealed class GetTicketUseCase(ITicketRepository ticketRepository, IString
             ticket.BranchId,
             ticket.IssuedAt));
     }
+
+    public async Task<Answer<TicketDto>> ExecuteByOrderAsync(long orderId, long restaurantId, CancellationToken ct = default)
+    {
+        var ticket = await ticketRepository.GetByOrderIdAsync(restaurantId, orderId, ct);
+        if (ticket is null)
+            return Answer<TicketDto>.Fail("TICKET_NOT_FOUND", localizer["TicketNotFound"]);
+
+        return Answer<TicketDto>.Ok(new TicketDto(
+            ticket.Id,
+            ticket.PublicId,
+            ticket.TicketNumber,
+            ticket.OrderId,
+            ticket.BranchId,
+            ticket.IssuedAt));
+    }
 }

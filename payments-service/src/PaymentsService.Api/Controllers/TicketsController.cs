@@ -22,4 +22,16 @@ public class TicketsController(GetTicketUseCase getTicketUseCase) : ControllerBa
 
         return BadRequest(answer);
     }
+
+    [HttpGet("by-order/{orderId:long}")]
+    public async Task<IActionResult> GetByOrder(long orderId, CancellationToken ct)
+    {
+        var restaurantId = User.RequireRestaurantId();
+        var answer = await getTicketUseCase.ExecuteByOrderAsync(orderId, restaurantId, ct);
+
+        if (answer.Success) return Ok(answer);
+        if (answer.Code == "TICKET_NOT_FOUND") return NotFound(answer);
+
+        return BadRequest(answer);
+    }
 }

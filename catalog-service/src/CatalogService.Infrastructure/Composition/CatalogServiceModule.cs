@@ -1,7 +1,10 @@
+using CatalogService.Application.Categories;
 using CatalogService.Application.Currencies;
 using CatalogService.Application.Menu;
 using CatalogService.Application.Items;
+using CatalogService.Application.ModifierGroups;
 using CatalogService.Application.PaymentMethods;
+using CatalogService.Application.Taxes;
 using CatalogService.Domain.Constants;
 using CatalogService.Domain.Repositories;
 using CatalogService.Infrastructure.Data;
@@ -46,24 +49,46 @@ public static class CatalogServiceModule
 
         services.AddScoped<IStationRepository, StationRepository>();
         services.AddScoped<GetStationsUseCase>();
+        services.AddScoped<CreateStationUseCase>();
+        services.AddScoped<UpdateStationUseCase>();
+        services.AddScoped<DeleteStationUseCase>();
 
         services.AddScoped<IMenuRepository, MenuRepository>();
         services.AddScoped<GetMenuUseCase>();
         services.AddScoped<CatalogDevSeeder>();
 
         services.AddScoped<ICurrencyRepository, CurrencyRepository>();
-services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<GetCurrenciesUseCase>();
         services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
         services.AddScoped<GetPaymentMethodsUseCase>();
+        services.AddScoped<CreatePaymentMethodUseCase>();
+        services.AddScoped<UpdatePaymentMethodUseCase>();
+        services.AddScoped<DeletePaymentMethodUseCase>();
 
-services.AddScoped<IProductRepository, ProductRepository>();
-services.AddScoped<ICategoryRepository, CategoryRepository>();
-services.AddScoped<ITaxRepository, TaxRepository>();
-services.AddScoped<IOptionGroupRepository, OptionGroupRepository>();
-services.AddScoped<CreateItemUseCase>();
-services.AddScoped<UpdateItemUseCase>();
-services.AddScoped<DeleteItemUseCase>();
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<ITaxRepository, TaxRepository>();
+        services.AddScoped<IOptionGroupRepository, OptionGroupRepository>();
+
+        services.AddScoped<GetItemsUseCase>();
+        services.AddScoped<CreateItemUseCase>();
+        services.AddScoped<UpdateItemUseCase>();
+        services.AddScoped<DeleteItemUseCase>();
+
+        services.AddScoped<GetCategoriesUseCase>();
+        services.AddScoped<CreateCategoryUseCase>();
+        services.AddScoped<UpdateCategoryUseCase>();
+        services.AddScoped<DeleteCategoryUseCase>();
+
+        services.AddScoped<GetModifierGroupsUseCase>();
+        services.AddScoped<CreateModifierGroupUseCase>();
+        services.AddScoped<UpdateModifierGroupUseCase>();
+        services.AddScoped<DeleteModifierGroupUseCase>();
+
+        services.AddScoped<GetTaxesUseCase>();
+        services.AddScoped<CreateTaxUseCase>();
+        services.AddScoped<UpdateTaxUseCase>();
+        services.AddScoped<DeleteTaxUseCase>();
         
         services.AddPosHealthChecks("catalog-service");
 

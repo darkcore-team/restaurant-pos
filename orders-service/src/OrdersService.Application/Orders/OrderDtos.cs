@@ -26,6 +26,9 @@ public sealed record OrderItemDto(
     decimal LineTotal, string? Notes, long? VoidedBy, DateTimeOffset? VoidedAt, string? VoidReason,
     IReadOnlyList<OrderItemModifierDto> Modifiers);
 
+public sealed record OrderStatusHistoryDto(
+    long Id, string? FromStatus, string ToStatus, DateTimeOffset ChangedAt, long? ChangedBy, string? Reason);
+
 public sealed record OrderDto(
     long Id, Guid PublicId, string OrderNumber, string OrderType, string Status,
     long? TableId, long BranchId, long CurrencyId, decimal ExchangeRate,
@@ -33,7 +36,8 @@ public sealed record OrderDto(
     decimal Subtotal, decimal DiscountAmount, decimal TaxAmount, decimal Total,
     decimal TipAmount, decimal PaidAmount, decimal BalanceDue,
     long? OpenedBy, DateTimeOffset OpenedAt, long? ClosedBy, DateTimeOffset? ClosedAt,
-    string? Notes, IReadOnlyList<OrderItemDto> Items);
+    string? Notes, IReadOnlyList<OrderItemDto> Items,
+    IReadOnlyList<OrderStatusHistoryDto>? StatusHistory = null);
 
 public sealed record CreateOrderResponse(long Id, string OrderNumber);
 

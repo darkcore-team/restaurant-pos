@@ -8,4 +8,8 @@ public interface ICashRegisterRepository
 
     Task<IReadOnlyList<CashRegister>>
         GetByBranchAsync(long branchId, long restaurantId, CancellationToken ct = default);
+
+    Task<bool> CodeExistsAsync(string code, long branchId, long restaurantId, long? excludeId, CancellationToken ct = default);
+    Task CreateAsync(CashRegister cashRegister, CancellationToken ct = default);
+    Task UpdateAsync(CashRegister cashRegister, CancellationToken ct = default);
 }

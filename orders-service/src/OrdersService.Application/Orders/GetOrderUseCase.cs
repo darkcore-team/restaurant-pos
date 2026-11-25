@@ -69,7 +69,17 @@ public sealed class GetOrderUseCase(IOrderRepository orderRepository, IStringLoc
                     m.Name,
                     m.PriceDelta,
                     m.Notes)).ToList()
-            )).ToList()
+            )).ToList(),
+            order.StatusHistory
+                .OrderBy(h => h.ChangedAt)
+                .Select(h => new OrderStatusHistoryDto(
+                    h.Id,
+                    h.FromStatus?.ToString(),
+                    h.ToStatus.ToString(),
+                    h.ChangedAt,
+                    h.ChangedBy,
+                    h.Reason))
+                .ToList()
         );
 
         return Answer<OrderDto>.Ok(dto);

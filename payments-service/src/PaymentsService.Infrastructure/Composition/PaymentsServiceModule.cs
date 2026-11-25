@@ -53,9 +53,13 @@ public static class PaymentsServiceModule
         services.AddScoped<ITicketRepository, TicketRepository>();
         
         services.AddScoped<GetCashRegistersUseCase>();
+        services.AddScoped<CreateCashRegisterUseCase>();
+        services.AddScoped<UpdateCashRegisterUseCase>();
+        services.AddScoped<DeleteCashRegisterUseCase>();
         services.AddScoped<OpenCashSessionUseCase>();
         services.AddScoped<CloseCashSessionUseCase>();
         services.AddScoped<GetActiveCashSessionUseCase>();
+        services.AddScoped<GetCashSessionsHistoryUseCase>();
         services.AddScoped<RegisterPaymentUseCase>();
         services.AddScoped<CancelPaymentUseCase>();
         services.AddScoped<GetOrderPaymentsUseCase>();

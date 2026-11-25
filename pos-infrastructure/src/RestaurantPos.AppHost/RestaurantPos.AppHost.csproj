@@ -1,0 +1,22 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.5.3">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\identity-service\src\IdentityService.Api\IdentityService.Api.csproj" />
+    <ProjectReference Include="..\..\..\catalog-service\src\CatalogService.Api\CatalogService.Api.csproj" />
+    <ProjectReference Include="..\..\..\tables-service\src\TablesService.Api\TablesService.Api.csproj" />
+    <ProjectReference Include="..\..\..\orders-service\src\OrdersService.Api\OrdersService.Api.csproj" />
+    <ProjectReference Include="..\..\..\payments-service\src\PaymentsService.Api\PaymentsService.Api.csproj" />
+    <ProjectReference Include="..\..\..\reporting-service\src\ReportingService.Api\ReportingService.Api.csproj" />
+    <ProjectReference Include="..\..\..\realtime-hub-service\src\RealtimeHubService.Api\RealtimeHubService.Api.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AspireUseCliBundle>true</AspireUseCliBundle>
+    <UserSecretsId>bdada19a-6101-4023-99c7-47e760c61efb</UserSecretsId>
+  </PropertyGroup>
+
+</Project>

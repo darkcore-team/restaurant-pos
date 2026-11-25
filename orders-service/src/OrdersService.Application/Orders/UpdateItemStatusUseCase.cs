@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrdersService.Domain.Constants;
+using OrdersService.Domain.Events;
 using OrdersService.Domain.Repositories;
 using RestaurantPos.Shared.Abstractions.Common;
 
@@ -66,7 +67,16 @@ public sealed class UpdateItemStatusUseCase(IOrderRepository orderRepository, IS
 
         order.UpdatedAt = now;
         order.UpdatedBy = actorId;
-        await orderRepository.UpdateAsync(order, ct);
+        await orderRepository.UpdateAsync(order, [new OrderItemStatusChangedEvent
+        {
+            RestaurantId = order.RestaurantId,
+            BranchId = order.BranchId,
+            OrderId = order.Id,
+            OrderItemId = item.Id,
+            StationCode = item.StationCode,
+            ItemStatus = item.Status.ToString(),
+            OrderStatus = order.Status.ToString()
+        }], ct);
         return Answer.Ok(message: localizer["ItemStatusUpdated"]);
     }
 }

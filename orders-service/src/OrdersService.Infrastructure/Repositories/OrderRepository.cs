@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using OrdersService.Domain.Constants;
 using OrdersService.Domain.Entities;
+using OrdersService.Domain.Events;
 using OrdersService.Domain.Repositories;
+using RestaurantPos.Shared.Abstractions.Events;
+using RestaurantPos.Shared.Persistence.Outbox;
 using OrdersService.Infrastructure.Data;
 
 namespace OrdersService.Infrastructure.Repositories;
@@ -14,15 +17,25 @@ public sealed class OrderRepository(OrdersServiceDbContext db) : IOrderRepositor
             .Include(o => o.StatusHistory)
             .FirstOrDefaultAsync(o => o.Id == id && o.RestaurantId == restaurantId, ct);
 
-    public async Task CreateAsync(Order order, CancellationToken ct = default)
+    public async Task CreateAsync(Order order, DomainEvent? domainEvent = null, CancellationToken ct = default)
     {
         db.Orders.Add(order);
+        if (domainEvent is not null)
+            db.AddDomainEvent(domainEvent);
         await db.SaveChangesAsync(ct);
     }
 
     public async Task UpdateAsync(Order order, CancellationToken ct = default)
     {
         db.Orders.Update(order);
+        await db.SaveChangesAsync(ct);
+    }
+
+    public async Task UpdateAsync(Order order, IEnumerable<DomainEvent> domainEvents, CancellationToken ct = default)
+    {
+        db.Orders.Update(order);
+        foreach (var domainEvent in domainEvents)
+            db.AddDomainEvent(domainEvent);
         await db.SaveChangesAsync(ct);
     }
 
@@ -61,4 +74,26 @@ public sealed class OrderRepository(OrdersServiceDbContext db) : IOrderRepositor
                     || o.Status == OrderStatus.Billing))
             .OrderByDescending(o => o.OpenedAt)
             .ToListAsync(ct);
+
+    public async Task<IReadOnlyList<Order>> GetHistoryOrdersAsync(
+        long restaurantId, long branchId, string? status, int limit, CancellationToken ct = default)
+    {
+        var safeLimit = Math.Clamp(limit, 1, 200);
+        var query = db.Orders
+            .AsNoTracking()
+            .Include(o => o.Items).ThenInclude(i => i.Modifiers)
+            .Where(o => o.RestaurantId == restaurantId && o.BranchId == branchId);
+
+        if (string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase))
+            query = query.Where(o => o.Status == OrderStatus.Closed);
+        else if (string.Equals(status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+            query = query.Where(o => o.Status == OrderStatus.Cancelled);
+        else
+            query = query.Where(o => o.Status == OrderStatus.Closed || o.Status == OrderStatus.Cancelled);
+
+        return await query
+            .OrderByDescending(o => o.ClosedAt ?? o.OpenedAt)
+            .Take(safeLimit)
+            .ToListAsync(ct);
+    }
 }

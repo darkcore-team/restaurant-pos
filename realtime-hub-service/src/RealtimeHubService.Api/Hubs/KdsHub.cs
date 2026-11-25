@@ -1,40 +1,48 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using RestaurantPos.Shared.Infrastructure.Authentication;
 
 namespace RealtimeHubService.Api.Hubs;
 
 [Authorize]
-public class KdsHub : Hub
+public sealed class KdsHub : Hub
 {
+    public static string GroupName(long restaurantId, string stationCode)
+        => $"{restaurantId}:station:{stationCode.Trim().ToUpperInvariant()}";
+
     public override async Task OnConnectedAsync()
     {
-        var user = Context.User;
-        var restaurantId = user?.FindFirst("restaurant_id")?.Value;
-        var station = Context.GetHttpContext()?.Request.Query["station"].ToString();
-
-        if (string.IsNullOrWhiteSpace(restaurantId) || string.IsNullOrWhiteSpace(station))
+        var restaurantId = Context.User?.RestaurantId();
+        if (restaurantId is null)
         {
             Context.Abort();
             return;
         }
 
-        var group = $"{restaurantId}:station:{station}";
-        await Groups.AddToGroupAsync(Context.ConnectionId, group);
-        await base.OnConnectedAsync();
-    }
+        var station = Context.GetHttpContext()?.Request.Query["station"].ToString();
+        if (!string.IsNullOrWhiteSpace(station))
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, GroupName(restaurantId.Value, station));
+        }
 
-    public override async Task OnDisconnectedAsync(Exception? exception)
-    {
-        await base.OnDisconnectedAsync(exception);
+        await base.OnConnectedAsync();
     }
 
     public async Task JoinStation(string stationCode)
     {
-        var restaurantId = Context.User?.FindFirst("restaurant_id")?.Value;
-        if (string.IsNullOrWhiteSpace(restaurantId) || string.IsNullOrWhiteSpace(stationCode))
+        var restaurantId = Context.User?.RestaurantId();
+        if (restaurantId is null || string.IsNullOrWhiteSpace(stationCode))
             throw new HubException("Missing restaurant_id or station");
 
-        var group = $"{restaurantId}:station:{stationCode}";
-        await Groups.AddToGroupAsync(Context.ConnectionId, group);
+        await Groups.AddToGroupAsync(Context.ConnectionId, GroupName(restaurantId.Value, stationCode));
+    }
+
+    public async Task LeaveStation(string stationCode)
+    {
+        var restaurantId = Context.User?.RestaurantId();
+        if (restaurantId is null || string.IsNullOrWhiteSpace(stationCode))
+            return;
+
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, GroupName(restaurantId.Value, stationCode));
     }
 }

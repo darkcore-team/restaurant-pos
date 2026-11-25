@@ -25,6 +25,18 @@ public class CashSessionRepository(PaymentsServiceDbContext db) : ICashSessionRe
             .FirstOrDefaultAsync(ct);
     }
 
+    public async Task<IReadOnlyList<CashSession>> GetHistoryAsync(long branchId, long restaurantId, int limit, CancellationToken ct = default)
+    {
+        var safeLimit = Math.Clamp(limit, 1, 200);
+        return await db.CashSessions
+            .AsNoTracking()
+            .Include(s => s.CashRegister)
+            .Where(s => s.BranchId == branchId && s.RestaurantId == restaurantId)
+            .OrderByDescending(s => s.OpenedAt)
+            .Take(safeLimit)
+            .ToListAsync(ct);
+    }
+
     public async Task<bool> HasOpenSessionForRegisterAsync(long cashRegisterId, long restaurantId, CancellationToken ct = default)
     {
         return await db.CashSessions.AnyAsync(s => s.CashRegisterId == cashRegisterId

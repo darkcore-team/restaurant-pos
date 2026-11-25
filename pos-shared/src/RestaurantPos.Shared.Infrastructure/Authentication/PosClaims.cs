@@ -6,4 +6,5 @@ public static class PosClaims
     public const string BranchId = "branch_id";
     public const string Permissions = "permissions";
     public const string DisplayName = "display_name";
+    public const string PreferredUsername = "preferred_username";
 }

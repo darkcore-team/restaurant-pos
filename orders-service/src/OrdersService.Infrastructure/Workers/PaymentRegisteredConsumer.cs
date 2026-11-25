@@ -130,6 +130,7 @@ public sealed class PaymentRegisteredConsumer(
                 BranchId = order.BranchId,
                 OrderId = order.Id,
                 OrderNumber = order.OrderNumber,
+                TableId = order.TableId,
                 OpenedBy = order.OpenedBy,
                 Total = order.Total,
                 DiscountAmount = order.DiscountAmount,

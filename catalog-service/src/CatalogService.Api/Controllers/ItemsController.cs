@@ -12,11 +12,21 @@ namespace CatalogService.Api.Controllers;
 [Authorize(Policy = PosPolicies.TenantAccess)]
 [Authorize(Policy = PosPolicies.ManagerOrAbove)]
 public class ItemsController(
+    GetItemsUseCase getUseCase,
     CreateItemUseCase createUseCase,
     UpdateItemUseCase updateUseCase,
     DeleteItemUseCase deleteUseCase,
     IStringLocalizer localizer) : ControllerBase
 {
+    [HttpGet]
+    public async Task<IActionResult> GetAll(CancellationToken ct)
+    {
+        var restaurantId = User.RequireRestaurantId();
+        var branchId = User.RequireBranchId();
+        var items = await getUseCase.ExecuteAsync(restaurantId, branchId, ct);
+        return Ok(Answer<IReadOnlyList<ItemDto>>.Ok(items));
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateItemRequest request, CancellationToken ct)
     {

@@ -5,4 +5,5 @@ namespace PaymentsService.Domain.Repositories;
 public interface ITicketRepository
 {
     Task<Ticket?> GetByNumberAsync(long restaurantId, string number, CancellationToken ct = default);
+    Task<Ticket?> GetByOrderIdAsync(long restaurantId, long orderId, CancellationToken ct = default);
 }

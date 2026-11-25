@@ -3,6 +3,7 @@ namespace RestaurantPos.Shared.Infrastructure.Messaging;
 public sealed class RabbitMqOptions
 {
     public const string SectionName = "RabbitMq";
+    public string? Uri { get; set; }
     public string HostName { get; set; } = "localhost";
     public int Port { get; set; } = 5672;
     public string Username { get; set; } = "guest";

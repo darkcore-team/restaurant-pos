@@ -1,0 +1,12 @@
+**/bin/
+**/obj/
+**/artifacts/
+**/.vs/
+**/.idea/
+.git/
+.gitignore
+AGENTS.md
+**/.env
+*.user
+*.suo
+node_modules/

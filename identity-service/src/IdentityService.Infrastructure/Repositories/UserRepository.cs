@@ -51,4 +51,24 @@ public sealed class UserRepository(IdentityServiceDbContext dbContext) : IUserRe
     {
         return await dbContext.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Id == id, ct);
     }
+
+    public async Task<User?> GetTrackedByIdAsync(long id, CancellationToken ct)
+    {
+        return await dbContext.Users.SingleOrDefaultAsync(u => u.Id == id, ct);
+    }
+
+    public async Task<User?> GetTrackedForTenantAsync(long id, long restaurantId, CancellationToken ct)
+    {
+        return await dbContext.Users
+            .Where(u => u.Id == id && u.UserBranches.Any(ub => ub.Branch.RestaurantId == restaurantId))
+            .Include(u => u.Person)
+            .Include(u => u.UserAuthorities)
+            .Include(u => u.UserBranches)
+            .SingleOrDefaultAsync(ct);
+    }
+
+    public async Task UpdateAsync(User user, CancellationToken ct)
+    {
+        await dbContext.SaveChangesAsync(ct);
+    }
 }

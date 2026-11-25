@@ -1,6 +1,9 @@
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using RestaurantPos.Shared.Abstractions.Common;
+using RestaurantPos.Shared.Abstractions.Events;
 using TablesService.Domain.Constants;
+using TablesService.Domain.Events;
 using TablesService.Domain.Repositories;
 
 namespace TablesService.Application.Tables;
@@ -8,7 +11,9 @@ namespace TablesService.Application.Tables;
 public sealed class ReleaseTableUseCase(
     ITableRepository tableRepository,
     ITableAssignmentRepository assignmentRepository,
-    IStringLocalizer localizer)
+    IEventBus eventBus,
+    IStringLocalizer localizer,
+    ILogger<ReleaseTableUseCase> logger)
 {
     public async Task<Answer> ExecuteAsync(
         long tableId,
@@ -39,6 +44,22 @@ public sealed class ReleaseTableUseCase(
         table.UpdatedAt = now;
         table.UpdatedBy = actorId;
         await tableRepository.UpdateAsync(table, ct);
+
+        try
+        {
+            await eventBus.PublishAsync(new TableStatusChangedEvent
+            {
+                RestaurantId = table.RestaurantId,
+                BranchId = table.BranchId,
+                TableId = table.Id,
+                TableCode = table.Code,
+                Status = table.Status.ToString()
+            }, ct);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to publish TableStatusChangedEvent for table {TableId}", table.Id);
+        }
 
         return Answer.Ok(message: localizer["TableReleased"]);
     }

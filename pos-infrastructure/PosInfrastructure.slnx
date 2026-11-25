@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/RestaurantPos.AppHost/RestaurantPos.AppHost.csproj" />
+  </Folder>
+</Solution>

@@ -3,7 +3,9 @@ using IdentityService.Domain.Entities;
 using IdentityService.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
+using PosIdentityOptions = IdentityService.Infrastructure.Configuration.IdentityOptions;
 
 namespace IdentityService.Infrastructure.Seed;
 
@@ -11,7 +13,8 @@ public sealed class IdentityDevSeeder(
     IdentityServiceDbContext db,
     IPasswordHasher<User> passwordHasher,
     IOpenIddictApplicationManager applicationManager,
-    IOpenIddictScopeManager scopeManager)
+    IOpenIddictScopeManager scopeManager,
+    IOptions<PosIdentityOptions> options)
 {
     public const string WebClientId = "pos-web";
     public const string WebClientSecret = "dev-secret";
@@ -155,33 +158,40 @@ public sealed class IdentityDevSeeder(
 
     private async Task SeedOpenIddictAsync(CancellationToken cancellationToken)
     {
-        if (await scopeManager.FindByNameAsync(ApiScope, cancellationToken) is null)
+        if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.OfflineAccess, cancellationToken) is null)
         {
             await scopeManager.CreateAsync(new OpenIddictScopeDescriptor
             {
-                Name = ApiScope,
-                DisplayName = "Restaurant POS API"
+                Name = OpenIddictConstants.Scopes.OfflineAccess,
+                DisplayName = "Offline access"
             }, cancellationToken);
         }
 
-        if (await applicationManager.FindByClientIdAsync(WebClientId, cancellationToken) is null)
+        var clientId = options.Value.WebClientId ?? WebClientId;
+        var clientSecret = options.Value.WebClientSecret ?? WebClientSecret;
+        
+        var application = await applicationManager.FindByClientIdAsync(clientId, cancellationToken);
+        
+        var descriptor = new OpenIddictApplicationDescriptor
         {
-            var descriptor = new OpenIddictApplicationDescriptor
+            ClientId = clientId, 
+            ClientSecret = clientSecret, 
+            ClientType = OpenIddictConstants.ClientTypes.Confidential,
+            DisplayName = "Restaurant POS Web", 
+            Permissions = 
             {
-                ClientId = WebClientId,
-                ClientSecret = WebClientSecret,
-                DisplayName = "Restaurant POS Web",
-                Permissions =
-                {
-                    OpenIddictConstants.Permissions.Endpoints.Token,
-                    OpenIddictConstants.Permissions.GrantTypes.Password,
-                    OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
-                    OpenIddictConstants.Permissions.GrantTypes.ClientCredentials,
-                    OpenIddictConstants.Permissions.Prefixes.Scope + ApiScope
-                }
-            };
-
+                OpenIddictConstants.Permissions.Endpoints.Token, 
+                OpenIddictConstants.Permissions.GrantTypes.Password, 
+                OpenIddictConstants.Permissions.GrantTypes.RefreshToken, 
+                OpenIddictConstants.Permissions.GrantTypes.ClientCredentials, 
+                OpenIddictConstants.Permissions.Prefixes.Scope + ApiScope, 
+                OpenIddictConstants.Permissions.Prefixes.Scope + OpenIddictConstants.Scopes.OfflineAccess
+            }
+        };
+        
+        if (application is null)
             await applicationManager.CreateAsync(descriptor, cancellationToken);
-        }
+        else
+            await applicationManager.UpdateAsync(application, descriptor, cancellationToken);
     }
 }
