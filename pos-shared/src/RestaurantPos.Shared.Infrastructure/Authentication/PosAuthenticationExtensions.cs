@@ -18,11 +18,13 @@ public static class PosAuthenticationExtensions
             throw new InvalidOperationException("Jwt:Authority and Jwt:Audience are both required. " +
                                                 "Authority points ar identity-service; Audience is the resource server identifier.");
 
+        var authority = jwt.Authority.TrimEnd('/');
+
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                options.Authority = jwt.Authority;
+                options.Authority = authority;
                 options.Audience = jwt.Audience;
 
                 options.RequireHttpsMetadata = jwt.RequireHttpsMetadata;
@@ -31,6 +33,7 @@ public static class PosAuthenticationExtensions
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
+                    ValidIssuers = [authority, $"{authority}/"],
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
