@@ -24,6 +24,12 @@ public sealed class OpenIddictTokenClient(
     {
         var client = httpClientFactory.CreateClient(HttpClientName);
         var url = options.Value.TokenEndpointUrl;
+        var port = Environment.GetEnvironmentVariable("PORT");
+        if (!string.IsNullOrWhiteSpace(port)
+            && string.Equals(url, "http://localhost:8081/connect/token", StringComparison.OrdinalIgnoreCase))
+        {
+            url = $"http://127.0.0.1:{port}/connect/token";
+        }
 
         using var response = await client.PostAsync(url, new FormUrlEncodedContent(form), cancellationToken);
         var payload = await response.Content.ReadAsStringAsync(cancellationToken);
