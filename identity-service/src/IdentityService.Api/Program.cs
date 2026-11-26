@@ -5,6 +5,7 @@ using IdentityService.Application.Users;
 using IdentityService.Infrastructure.Composition;
 using IdentityService.Infrastructure.Seed;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
 using OpenIddict.Validation.AspNetCore;
 using RestaurantPos.Shared.Infrastructure.Authentication;
 using IdentityService.Api.Middleware;
@@ -29,10 +30,17 @@ builder.Services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.Authen
 builder.Services.AddPosAuthorizationPolicies();
 builder.Services.AddPosAntiForgery();
 builder.Services.AddControllers();
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 var app = builder.Build();
 
 // Middlewares
+app.UseForwardedHeaders();
 app.UsePosLocalization();
 app.UseGlobalExceptionHandler();
 app.UseCookieToBearer();
