@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using IdentityService.Domain.Constants;
 using IdentityService.Domain.Entities;
 using IdentityService.Domain.Repositories;
@@ -9,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Server;
 using RestaurantPos.Shared.Infrastructure.Health;
 using RestaurantPos.Shared.Infrastructure.Localization;
@@ -73,8 +76,28 @@ public static class IdentityServiceModule
                 options.SetAccessTokenLifetime(TimeSpan.FromMinutes(identityOptions.AccessTokenExpiration));
                 options.SetRefreshTokenLifetime(TimeSpan.FromMinutes(identityOptions.RefreshTokenExpiration));
                 
-                options.AddEphemeralSigningKey();
-                options.AddEphemeralEncryptionKey();
+                var signingKeyPem = configuration["Identity:SigningKeyPem"];
+                if (!string.IsNullOrWhiteSpace(signingKeyPem))
+                {
+                    var rsa = RSA.Create();
+                    rsa.ImportFromPem(signingKeyPem.Replace("\\n", "\n"));
+                    options.AddSigningKey(new RsaSecurityKey(rsa));
+                }
+                else
+                {
+                    options.AddEphemeralSigningKey();
+                }
+
+                var dataProtectionSecret = Environment.GetEnvironmentVariable("DATA_PROTECTION_KEY");
+                if (!string.IsNullOrWhiteSpace(dataProtectionSecret))
+                {
+                    var encBytes = SHA256.HashData(Encoding.UTF8.GetBytes(dataProtectionSecret));
+                    options.AddEncryptionKey(new SymmetricSecurityKey(encBytes));
+                }
+                else
+                {
+                    options.AddEphemeralEncryptionKey();
+                }
                 options.DisableAccessTokenEncryption();
                 
                 options.AddEventHandler<OpenIddictServerEvents.HandleTokenRequestContext>(handler =>
