@@ -51,6 +51,7 @@ public static class PosAuthenticationExtensions
     {
         services.AddAuthorizationBuilder()
             .AddPolicy(PosPolicies.TenantAccess, p => p.RequireClaim(PosClaims.RestaurantId))
+            .AddPolicy(PosPolicies.KdsAccess, p => p.RequireRole("ADMIN", "OWNER", "MANAGER", "COOK", "WAITER"))
             .AddPolicy(PosPolicies.WaiterOrAbove, p => p.RequireRole("ADMIN", "OWNER", "MANAGER", "WAITER", "HOST"))
             .AddPolicy(PosPolicies.ManagerOrAbove, p => p.RequireRole("ADMIN", "OWNER", "MANAGER"))
             .AddPolicy(PosPolicies.CashierOrAbove, p => p.RequireRole("ADMIN", "OWNER", "MANAGER", "CASHIER"))

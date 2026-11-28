@@ -88,7 +88,7 @@ public class OrdersController(
     }
 
     [HttpPost("{id:long}/items/{itemId:long}/status")]
-    [Authorize(Policy = PosPolicies.WaiterOrAbove)]
+    [Authorize(Policy = PosPolicies.KdsAccess)]
     public async Task<IActionResult> UpdateItemStatus(long id, long itemId, [FromBody] UpdateItemStatusRequest request, CancellationToken ct)
     {
         var restaurantId = User.RequireRestaurantId();

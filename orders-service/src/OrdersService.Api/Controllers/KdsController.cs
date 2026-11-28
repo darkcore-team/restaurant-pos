@@ -9,7 +9,7 @@ namespace OrdersService.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Policy = PosPolicies.TenantAccess)]
-[Authorize(Policy = PosPolicies.WaiterOrAbove)]
+[Authorize(Policy = PosPolicies.KdsAccess)]
 public class KdsController(GetKdsUseCase useCase) : ControllerBase
 {
     [HttpGet("{stationCode}")]
