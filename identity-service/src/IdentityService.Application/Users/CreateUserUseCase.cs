@@ -47,9 +47,10 @@ public static class CreateUserUseCase
                 AuthorityId = a.Id,
                 GrantedBy = actorId
             }).ToList(),
-            UserBranches = branches.Select(b => new UserBranch()
+            UserBranches = branches.Select((b, index) => new UserBranch()
             {
                 BranchId = b.Id,
+                IsPrimary = index == 0,
                 CreatedBy = actorId
             }).ToList()
         };

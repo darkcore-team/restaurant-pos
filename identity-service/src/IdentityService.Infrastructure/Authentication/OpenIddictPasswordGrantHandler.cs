@@ -105,12 +105,14 @@ public sealed class OpenIddictPasswordGrantHandler(
             .ToListAsync();
 
         var branch = await db.UserBranches
-            .Where(ub => ub.UserId == user.Id && ub.IsPrimary)
+            .Where(ub => ub.UserId == user.Id)
+            .OrderByDescending(ub => ub.IsPrimary)
+            .ThenBy(ub => ub.Id)
             .Join(db.Branches,
                 ub => ub.BranchId,
                 b => b.Id,
                 (ub, b) => b)
-            .SingleOrDefaultAsync();
+            .FirstOrDefaultAsync();
         
         var identity = new ClaimsIdentity(
             authenticationType: TokenValidationParameters.DefaultAuthenticationType,
